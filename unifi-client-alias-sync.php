@@ -15,7 +15,7 @@ namespace UniFi_Client_Alias_Sync;
  */
 
 // UniFi API client library.
-require_once 'vendor/uniFi-api-client.php';
+require_once 'vendor/unifi-api-client.php';
 
 /**
  * Class for syncing client aliases across a UniFi controllers sites.
