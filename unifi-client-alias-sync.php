@@ -349,6 +349,45 @@ class Syncer {
 	}
 
 	/**
+	 * Returns the client aliases applicable to the given site.
+	 *
+	 * @access private
+	 *
+	 * @param string $site_name      Name of the site.
+	 * @param array  $client_aliases Associative array of sites names and the
+	 *                               client aliases defined on those sites.
+	 * @return array
+	 */
+	private static function get_client_aliases_for_site( $site_name, $client_aliases ) {
+		$macs = [];
+
+		// Aliases defined via constant take precedence and apply to all sites.
+		foreach ( UNIFI_ALIAS_SYNC_ALIASES as $mac => $alias ) {
+			$macs[ $mac ] = $alias;
+		}
+
+		// Get a list of all aliases that apply to the site.
+		foreach ( $client_aliases as $alias_site_name => $aliases ) {
+
+			// Skip site's own list of aliases.
+			if ( $alias_site_name === $site_name ) {
+				continue;
+			}
+
+			// Store the MAC address and alias mapping.
+			foreach ( $aliases as $alias ) {
+				// Sites are ordered by precedence, so don't override existing alias mapping.
+				if ( empty( $macs[ $alias->mac ] ) ) {
+					$macs[ $alias->mac ] = $alias->name;
+				}
+			}
+
+		}
+
+		return $macs;
+	}
+
+	/**
 	 * Syncs client aliases across all sites.
 	 *
 	 * @access private
@@ -365,31 +404,8 @@ class Syncer {
 			// The number of clients on the site that were assigned an alias.
 			$assigned_alias = 0;
 
-			// MAC address to alias mappings.
-			$macs = [];
-
-			// Aliases defined via constant take precedence.
-			foreach ( UNIFI_ALIAS_SYNC_ALIASES as $mac => $alias ) {
-				$macs[ $mac ] = $alias;
-			}
-
-			// Get a list of all aliases that apply to this site.
-			foreach ( $client_aliases as $alias_site_name => $aliases ) {
-
-				// Skip site's own list of aliases.
-				if ( $alias_site_name === $site->name ) {
-					continue;
-				}
-
-				// Store the MAC address and alias mapping.
-				foreach ( $aliases as $alias ) {
-					// Sites are ordered by precedence, so don't override existing alias mapping.
-					if ( empty( $macs[ $alias->mac ] ) ) {
-						$macs[ $alias->mac ] = $alias->name;
-					}
-				}
-
-			}
+			// Get MAC address to alias mappings.
+			$macs = self::get_client_aliases_for_site( $site->name, $client_aliases );
 
 			// Get clients for the site being iterated.
 			$clients = self::get_clients( $site->name );
