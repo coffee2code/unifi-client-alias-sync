@@ -118,7 +118,7 @@ class Syncer {
 		// Check for controller URL.
 		$controller_url = rtrim( UNIFI_ALIAS_SYNC_CONTROLLER, '/' );
 
-		self::$unifi_connection = new \UniFi_API\Client( UNIFI_ALIAS_SYNC_USER, UNIFI_ALIAS_SYNC_PASSWORD, $controller_url, '', '', UNIFI_ALIAS_SYNC_VERIFY_SSL );
+		self::$unifi_connection = new \UniFi_API\Client( UNIFI_ALIAS_SYNC_USER, UNIFI_ALIAS_SYNC_PASSWORD, $controller_url, 'default', '', UNIFI_ALIAS_SYNC_VERIFY_SSL );
 
 		if ( self::is_debug() ) {
 			self::$unifi_connection->set_debug( true );
