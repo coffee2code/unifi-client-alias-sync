@@ -38,6 +38,14 @@ class Syncer {
 	private static $unifi_connection;
 
 	/**
+	 * Memoized storage for sites.
+	 *
+	 * @var array
+	 * @access private
+	 */
+	private static $sites;
+
+	/**
 	 * Memoized storage for clients per site.
 	 *
 	 * @var array
@@ -243,6 +251,11 @@ class Syncer {
 	 * @return array Associative array of sites with site names as keys and site objects as values.
 	 */
 	protected static function get_sites() {
+		// Return value if memoized.
+		if ( self::$sites ) {
+			return self::$sites;
+		}
+
 		$sites = [];
 
 		$sites_resp = self::$unifi_connection->list_sites();
@@ -253,7 +266,7 @@ class Syncer {
 			}
 		}
 
-		return self::prioritize_sites( $sites );
+		return self::$sites = self::prioritize_sites( $sites );
 	}
 
 	/**
