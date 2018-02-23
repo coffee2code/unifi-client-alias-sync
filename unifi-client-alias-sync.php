@@ -54,6 +54,14 @@ class Syncer {
 	private static $clients;
 
 	/**
+	 * Memoized storage for client aliases by site.
+	 *
+	 * @var array
+	 * @access private
+	 */
+	private static $client_aliases;
+
+	/**
 	 * Syncs client aliases across a controller's sites.
 	 *
 	 * @access public
@@ -337,6 +345,11 @@ class Syncer {
 	 *               of aliased clients.
 	 */
 	protected static function get_aliased_clients( $sites ) {
+		// Return value if memoized.
+		if ( self::$client_aliases ) {
+			return self::$client_aliases;
+		}
+
 		$client_aliases = [];
 
 		// For each site, get a list of all clients with an alias.
@@ -358,7 +371,7 @@ class Syncer {
 			}
 		}
 
-		return $client_aliases;
+		return self::$client_aliases = $client_aliases;
 	}
 
 	/**
