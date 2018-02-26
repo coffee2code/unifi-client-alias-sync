@@ -1,6 +1,9 @@
 <?php
 /**
- * The configuration for the UniFi Client Alias Sync script.
+ * The configuration for the UniFi Controller Client Alias Sync script.
+ *
+ * NOTE: DO NOT EDIT config-sample.php. Instead, copy it to config.php and
+ * customize that new file.
  *
  * @package UniFi_Client_Alias_Sync
  */
