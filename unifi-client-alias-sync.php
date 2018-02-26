@@ -99,7 +99,7 @@ class Syncer {
 		}
 
 		// Get a list of aliased clients per site.
-		$client_aliases = self::get_aliased_clients( $sites );
+		$client_aliases = self::get_aliased_clients();
 
 		// Bail if there are no aliased clients on any site and no aliases defined
 		// via config since there is nothing to sync.
@@ -108,7 +108,7 @@ class Syncer {
 		}
 
 		// Sync client aliases across sites.
-		self::sync_aliases( $sites, $client_aliases );
+		self::sync_aliases();
 
 		self::status( 'Done.' );
 	}
@@ -340,17 +340,18 @@ class Syncer {
 	 *
 	 * @access protected
 	 *
-	 * @param array  $sites Array of sites.
 	 * @return array Associative array of site names and their respective arrays
 	 *               of aliased clients.
 	 */
-	protected static function get_aliased_clients( $sites ) {
+	protected static function get_aliased_clients() {
 		// Return value if memoized.
 		if ( self::$client_aliases ) {
 			return self::$client_aliases;
 		}
 
 		$client_aliases = [];
+
+		$sites = self::get_sites();
 
 		// For each site, get a list of all clients with an alias.
 		foreach ( $sites as $site ) {
@@ -379,13 +380,14 @@ class Syncer {
 	 *
 	 * @access private
 	 *
-	 * @param string $site_name      Name of the site.
-	 * @param array  $client_aliases Associative array of sites names and the
-	 *                               client aliases defined on those sites.
+	 * @param string $site_name Name of the site.
 	 * @return array
 	 */
-	private static function get_client_aliases_for_site( $site_name, $client_aliases ) {
+	private static function get_client_aliases_for_site( $site_name ) {
 		$macs = [];
+
+		// Get a list of aliased clients per site.
+		$client_aliases = self::get_aliased_clients();
 
 		// Aliases defined via constant take precedence and apply to all sites.
 		foreach ( UNIFI_ALIAS_SYNC_ALIASES as $mac => $alias ) {
@@ -417,12 +419,11 @@ class Syncer {
 	 * Syncs client aliases across all sites.
 	 *
 	 * @access private
-	 *
-	 * @param array $sites          Array of sites.
-	 * @param array $client_aliases Associative array of site names with their
-	 *                              respective aliased clients.
 	 */
-	private static function sync_aliases( $sites, $client_aliases ) {
+	private static function sync_aliases() {
+		// Get sites.
+		$sites = self::get_sites();
+
 		// Iterate through all sites.
 		foreach ( $sites as $site ) {
 			self::status( "About to assign client aliases to site {$site->name}..." );
@@ -431,7 +432,7 @@ class Syncer {
 			$assigned_alias = 0;
 
 			// Get MAC address to alias mappings.
-			$macs = self::get_client_aliases_for_site( $site->name, $client_aliases );
+			$macs = self::get_client_aliases_for_site( $site->name );
 
 			// Get clients for the site being iterated.
 			$clients = self::get_clients( $site->name );
