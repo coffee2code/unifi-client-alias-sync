@@ -237,7 +237,9 @@ class Syncer {
 		// Check that required constants are defined. Don't bail immediately though,
 		// so multiple missing constants can be reported to user at once.
 		foreach ( self::REQUIRED_CONFIG as $constant => $description ) {
-			if ( is_null( $this->get_config( $constant ) ) ) {
+			$value = $this->get_config( $constant );
+			// Required settings cannot be null or an empty string.
+			if ( is_null( $value ) || '' === $value ) {
 				$this->status( "Error: Required constant {$constant} was not defined: {$description}" );
 				$bail = true;
 			}
