@@ -228,7 +228,7 @@ class Syncer {
 
 		// Check that full URL for controller was supplied.
 		$controller = $this->get_config( 'UNIFI_ALIAS_SYNC_CONTROLLER' );
-		if ( ! $controller ) {
+		if ( $controller ) {
 			if ( 0 !== strpos( $controller, 'https://' ) ) {
 				$this->status( "Error: The URL defined in UNIFI_ALIAS_SYNC_CONTROLLER does not include the protocol 'https://'." );
 				$bail = true;
