@@ -30,6 +30,31 @@ class Syncer {
 	const CONFIG_FILE = __DIR__ . DIRECTORY_SEPARATOR . 'config.php';
 
 	/**
+	 * Required configuration options and their descriptions.
+	 *
+	 * @var array
+	 */
+	const REQUIRED_CONFIG = array(
+		'UNIFI_ALIAS_SYNC_CONTROLLER'        => 'URL of the UniFi controller, including full protocol and port number.',
+		'UNIFI_ALIAS_SYNC_USER'              => 'Username of admin user.',
+		'UNIFI_ALIAS_SYNC_PASSWORD'          => 'Password for admin user.',
+	);
+
+	/**
+	 * Optional configuration options and their default values.
+	 *
+	 * @var array
+	 */
+	const OPTIONAL_CONFIG = array(
+		'UNIFI_ALIAS_SYNC_VERIFY_SSL'        => true,
+		'UNIFI_ALIAS_SYNC_DRY_RUN'           => true,
+		'UNIFI_ALIAS_SYNC_DEBUG'             => false,
+		'UNIFI_ALIAS_SYNC_ALIASES'           => [],
+		'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' => [],
+	);
+
+
+	/**
 	 * The UniFi Controller client object.
 	 *
 	 * @var array
@@ -206,28 +231,12 @@ class Syncer {
 	 * @access private
 	 */
 	protected function verify_config() {
-		// Required constants and their descriptions.
-		$required_constants = array(
-			'UNIFI_ALIAS_SYNC_CONTROLLER'        => 'URL of the UniFi controller, including full protocol and port number.',
-			'UNIFI_ALIAS_SYNC_USER'              => 'Username of admin user.',
-			'UNIFI_ALIAS_SYNC_PASSWORD'          => 'Password for admin user.',
-		);
-
-		// Optional constants and their default values.
-		$optional_constants = array(
-			'UNIFI_ALIAS_SYNC_VERIFY_SSL'        => true,
-			'UNIFI_ALIAS_SYNC_DRY_RUN'           => true,
-			'UNIFI_ALIAS_SYNC_DEBUG'             => false,
-			'UNIFI_ALIAS_SYNC_ALIASES'           => [],
-			'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' => [],
-		);
-
 		// Flag for determining if an error was encountered.
 		$bail = false;
 
 		// Check that required constants are defined. Don't bail immediately though,
 		// so multiple missing constants can be reported to user at once.
-		foreach ( $required_constants as $constant => $description ) {
+		foreach ( self::REQUIRED_CONFIG as $constant => $description ) {
 			if ( is_null( $this->get_config( $constant ) ) ) {
 				$this->status( "Error: Required constant {$constant} was not defined: {$description}" );
 				$bail = true;
@@ -270,7 +279,7 @@ class Syncer {
 		}
 
 		// For optional constants, define them with default values if not defined.
-		foreach ( $optional_constants as $constant => $default ) {
+		foreach ( self::OPTIONAL_CONFIG as $constant => $default ) {
 			if ( is_null( $this->get_config( $constant ) ) ) {
 				$this->set_config( $constant, $default );
 			}
