@@ -76,6 +76,9 @@ class Syncer {
 	 * @access public
 	 */
 	public function sync() {
+
+	try {
+
 		// Perform initialization.
 		$this->init();
 
@@ -120,6 +123,11 @@ class Syncer {
 		$this->sync_aliases();
 
 		$this->status( 'Done.' );
+
+	} catch ( \Exception $e ) {
+		// Do nothing; error message has already been displayed and script is ending.
+	} // end try/catch
+
 	}
 
 	/**
@@ -542,10 +550,10 @@ class Syncer {
 
 		// Append a newline if a message was supplied.
 		if ( $message ) {
-			$message .= "\n";
+			$this->status( $message );
 		}
 
-		die( $message );
+		throw new \Exception( $message );
 	}
 
 	/**
