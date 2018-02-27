@@ -234,7 +234,7 @@ class Syncer {
 		// Check that aliases are defined properly.
 		if ( defined( 'UNIFI_ALIAS_SYNC_ALIASES' ) ) {
 			if ( ! is_array( UNIFI_ALIAS_SYNC_ALIASES ) ) {
-				$this->status( "Error: Invalid format for UNIFI_ALIAS_SYNC_ALIASES: {$mac}" );
+				$this->status( "Error: Invalid format for UNIFI_ALIAS_SYNC_ALIASES: " . UNIFI_ALIAS_SYNC_ALIASES );
 				$bail = true;
 			} else {
 				foreach ( UNIFI_ALIAS_SYNC_ALIASES as $mac => $alias ) {
