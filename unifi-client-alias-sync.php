@@ -582,4 +582,7 @@ class Syncer {
 	}
 }
 
-Syncer::get_instance()->sync();
+// Immediately invoke the script when executed from the command line.
+if ( isset( $argv ) && $argv[0] === basename( __FILE__ ) ) {
+	Syncer::get_instance()->sync();
+}
