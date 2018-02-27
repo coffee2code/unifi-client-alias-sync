@@ -61,17 +61,26 @@ class Syncer {
 	 */
 	private static $client_aliases;
 
+	protected static $instance;
+
+	public static function get_instance() {
+		if ( ! self::$instance ) {
+			self::$instance = new static();
+		}
+		return self::$instance;
+	}
+
 	/**
 	 * Syncs client aliases across a controller's sites.
 	 *
 	 * @access public
 	 */
-	public static function sync() {
+	public function sync() {
 		// Perform initialization.
-		self::init();
+		$this->init();
 
 		// Get all of the sites on the controller.
-		$sites = self::get_sites();
+		$sites = $this->get_sites();
 
 		// Exceptions are made if aliases are defined via config.
 		$has_config_aliases = (bool) count( UNIFI_ALIAS_SYNC_ALIASES );
@@ -79,38 +88,38 @@ class Syncer {
 		// Bail if there are less than two sites since that is the minimum needed in order to be able to sync client aliases across sites.
 		switch ( count( $sites ) ) {
 			case 0:
-				self::bail( "Error: No sites found." );
+				$this->bail( "Error: No sites found." );
 			case 1:
 				// Bail unless there are aliases defined via config.
 				if ( ! $has_config_aliases ) {
-					self::bail( "Notice: Only one site found so there is no need to sync aliases across any other sites." );
+					$this->bail( "Notice: Only one site found so there is no need to sync aliases across any other sites." );
 				}
 		}
 
-		self::status( 'Sites found: ' . count( $sites ) );
+		$this->status( 'Sites found: ' . count( $sites ) );
 
 		// Report on client aliases defined via config.
 		if ( $has_config_aliases ) {
-			self::status( "\tUNIFI_ALIAS_SYNC_ALIASES has " . count( UNIFI_ALIAS_SYNC_ALIASES ) . ' client aliases defined.' );
+			$this->status( "\tUNIFI_ALIAS_SYNC_ALIASES has " . count( UNIFI_ALIAS_SYNC_ALIASES ) . ' client aliases defined.' );
 
 			foreach ( UNIFI_ALIAS_SYNC_ALIASES as $mac => $alias ) {
-				self::status( "\t\t'{$mac}' => '{$alias}'" );
+				$this->status( "\t\t'{$mac}' => '{$alias}'" );
 			}
 		}
 
 		// Get a list of aliased clients per site.
-		$client_aliases = self::get_aliased_clients();
+		$client_aliases = $this->get_aliased_clients();
 
 		// Bail if there are no aliased clients on any site and no aliases defined
 		// via config since there is nothing to sync.
 		if ( ! $client_aliases && ! $has_config_aliases ) {
-			self::bail( "Notice: There are no clients with an alias on any site." );
+			$this->bail( "Notice: There are no clients with an alias on any site." );
 		}
 
 		// Sync client aliases across sites.
-		self::sync_aliases();
+		$this->sync_aliases();
 
-		self::status( 'Done.' );
+		$this->status( 'Done.' );
 	}
 
 	/**
@@ -118,17 +127,17 @@ class Syncer {
 	 *
 	 * @access private
 	 */
-	private static function init() {
-		self::verify_environment();
+	protected function init() {
+		$this->verify_environment();
 
 		require self::CONFIG_FILE;
 
-		self::verify_config();
+		$this->verify_config();
 
-		self::status( 'Environment and config file have been verified.' );
+		$this->status( 'Environment and config file have been verified.' );
 
 		if ( UNIFI_ALIAS_SYNC_DRY_RUN ) {
-			self::status( "UNIFI_ALIAS_SYNC_DRY_RUN mode enabled; aliases won't actually get synchronized." );
+			$this->status( "UNIFI_ALIAS_SYNC_DRY_RUN mode enabled; aliases won't actually get synchronized." );
 		}
 
 		// Check for controller URL.
@@ -136,7 +145,7 @@ class Syncer {
 
 		self::$unifi_connection = new \UniFi_API\Client( UNIFI_ALIAS_SYNC_USER, UNIFI_ALIAS_SYNC_PASSWORD, $controller_url, 'default', '', UNIFI_ALIAS_SYNC_VERIFY_SSL );
 
-		if ( self::is_debug() ) {
+		if ( $this->is_debug() ) {
 			self::$unifi_connection->set_debug( true );
 		}
 
@@ -150,7 +159,7 @@ class Syncer {
 	 *
 	 * @return bool True if debug is enabled, false otherwise.
 	 */
-	private static function is_debug() {
+	protected function is_debug() {
 		return (bool) UNIFI_ALIAS_SYNC_DEBUG;
 	}
 
@@ -164,13 +173,13 @@ class Syncer {
 	 *
 	 * @access private
 	 */
-	private static function verify_environment() {
+	protected function verify_environment() {
 		if ( ! file_exists( self::CONFIG_FILE ) ) {
-			self::bail( "Error: Unable to locate config file: {self::CONFIG_FILE}\nCopy config-sample.php to that filename and customize." );
+			$this->bail( "Error: Unable to locate config file: {self::CONFIG_FILE}\nCopy config-sample.php to that filename and customize." );
 		}
 
 		if ( ! ini_get( 'allow_url_fopen' ) ) {
-			self::bail( "Error: The PHP directive 'allow_url_fopen' is not enabled on this system." );
+			$this->bail( "Error: The PHP directive 'allow_url_fopen' is not enabled on this system." );
 		}
 	}
 
@@ -181,7 +190,7 @@ class Syncer {
 	 *
 	 * @access private
 	 */
-	private static function verify_config() {
+	protected function verify_config() {
 		// Required constants and their descriptions.
 		$required_constants = array(
 			'UNIFI_ALIAS_SYNC_CONTROLLER'        => 'URL of the UniFi controller, including full protocol and port number.',
@@ -205,7 +214,7 @@ class Syncer {
 		// so multiple missing constants can be reported to user at once.
 		foreach ( $required_constants as $constant => $description ) {
 			if ( ! defined( $constant ) ) {
-				self::status( "Error: Required constant {$constant} was not defined: {$description}" );
+				$this->status( "Error: Required constant {$constant} was not defined: {$description}" );
 				$bail = true;
 			}
 		}
@@ -213,11 +222,11 @@ class Syncer {
 		// Check that full URL for controller was supplied.
 		if ( defined( 'UNIFI_ALIAS_SYNC_CONTROLLER' ) ) {
 			if ( 0 !== strpos( UNIFI_ALIAS_SYNC_CONTROLLER, 'https://' ) ) {
-				self::status( "Error: The URL defined in UNIFI_ALIAS_SYNC_CONTROLLER does not include the protocol 'https://'." );
+				$this->status( "Error: The URL defined in UNIFI_ALIAS_SYNC_CONTROLLER does not include the protocol 'https://'." );
 				$bail = true;
 			}
 			if ( ! preg_match( '~:[0-9]+/?$~', UNIFI_ALIAS_SYNC_CONTROLLER ) ) {
-				self::status( "Error: The URL defined in UNIFI_ALIAS_SYNC_CONTROLLER does not include the port number. This is usually 8443 or 443." );
+				$this->status( "Error: The URL defined in UNIFI_ALIAS_SYNC_CONTROLLER does not include the port number. This is usually 8443 or 443." );
 				$bail = true;
 			}
 		}
@@ -225,13 +234,13 @@ class Syncer {
 		// Check that aliases are defined properly.
 		if ( defined( 'UNIFI_ALIAS_SYNC_ALIASES' ) ) {
 			if ( ! is_array( UNIFI_ALIAS_SYNC_ALIASES ) ) {
-				self::status( "Error: Invalid format for UNIFI_ALIAS_SYNC_ALIASES: {$mac}" );
+				$this->status( "Error: Invalid format for UNIFI_ALIAS_SYNC_ALIASES: {$mac}" );
 				$bail = true;
 			} else {
 				foreach ( UNIFI_ALIAS_SYNC_ALIASES as $mac => $alias ) {
 					// Check MAC address.
 					if ( ! preg_match( '/^(?:[[:xdigit:]]{2}([-:]))(?:[[:xdigit:]]{2}\1){4}[[:xdigit:]]{2}$/', $mac ) ) {
-						self::status( "Error: Invalid MAC address supplied in UNIFI_ALIAS_SYNC_ALIASES: {$mac}" );
+						$this->status( "Error: Invalid MAC address supplied in UNIFI_ALIAS_SYNC_ALIASES: {$mac}" );
 						$bail = true;
 					}
 				}
@@ -240,7 +249,7 @@ class Syncer {
 
 		// Truly bail if an error was encountered.
 		if ( $bail ) {
-			self::bail( 'Terminating script for invalid config file.' );
+			$this->bail( 'Terminating script for invalid config file.' );
 		}
 
 		// For optional constants, define them with default values if not defined.
@@ -258,7 +267,7 @@ class Syncer {
 	 *
 	 * @return array Associative array of sites with site names as keys and site objects as values.
 	 */
-	protected static function get_sites() {
+	protected function get_sites() {
 		// Return value if memoized.
 		if ( self::$sites ) {
 			return self::$sites;
@@ -274,7 +283,7 @@ class Syncer {
 			}
 		}
 
-		return self::$sites = self::prioritize_sites( $sites );
+		return self::$sites = $this->prioritize_sites( $sites );
 	}
 
 	/**
@@ -286,7 +295,7 @@ class Syncer {
 	 *                      site objects as values.
 	 * @return array
 	 */
-	private static function prioritize_sites( $sites ) {
+	protected function prioritize_sites( $sites ) {
 		// Get explicitly prioritized sites.
 		$priority_sites = [];
 		foreach ( UNIFI_ALIAS_SYNC_PRIORITIZED_SITES as $site ) {
@@ -325,7 +334,7 @@ class Syncer {
 	 * @param  string $site_name The name of the site.
 	 * @return array Array of the site's clients.
 	 */
-	protected static function get_clients( $site_name ) {
+	protected function get_clients( $site_name ) {
 		// If not already memoized, make the request for the site's clients.
 		if ( empty( self::$clients[ $site_name ] ) ) {
 			self::$unifi_connection->set_site( $site_name );
@@ -343,7 +352,7 @@ class Syncer {
 	 * @return array Associative array of site names and their respective arrays
 	 *               of aliased clients.
 	 */
-	protected static function get_aliased_clients() {
+	protected function get_aliased_clients() {
 		// Return value if memoized.
 		if ( self::$client_aliases ) {
 			return self::$client_aliases;
@@ -351,11 +360,11 @@ class Syncer {
 
 		$client_aliases = [];
 
-		$sites = self::get_sites();
+		$sites = $this->get_sites();
 
 		// For each site, get a list of all clients with an alias.
 		foreach ( $sites as $site ) {
-			$clients = self::get_clients( $site->name );
+			$clients = $this->get_clients( $site->name );
 
 			// The client alias, if defined, is stored as "name".
 			$aliased_clients = array_filter( $clients, function( $client ) {
@@ -366,9 +375,9 @@ class Syncer {
 				$client_aliases[ $site->name ] = $aliased_clients;
 			}
 
-			self::status( "\tSite {$site->name} has " . count( $clients ) . ' clients, ' . count( $aliased_clients ) . ' of which are aliased.' );
+			$this->status( "\tSite {$site->name} has " . count( $clients ) . ' clients, ' . count( $aliased_clients ) . ' of which are aliased.' );
 			foreach ( $aliased_clients as $ac ) {
-				self::status( "\t\t'{$ac->mac}' => '{$ac->name}'" );
+				$this->status( "\t\t'{$ac->mac}' => '{$ac->name}'" );
 			}
 		}
 
@@ -383,11 +392,11 @@ class Syncer {
 	 * @param string $site_name Name of the site.
 	 * @return array
 	 */
-	private static function get_client_aliases_for_site( $site_name ) {
+	protected function get_client_aliases_for_site( $site_name ) {
 		$macs = [];
 
 		// Get a list of aliased clients per site.
-		$client_aliases = self::get_aliased_clients();
+		$client_aliases = $this->get_aliased_clients();
 
 		// Aliases defined via constant take precedence and apply to all sites.
 		foreach ( UNIFI_ALIAS_SYNC_ALIASES as $mac => $alias ) {
@@ -420,22 +429,22 @@ class Syncer {
 	 *
 	 * @access private
 	 */
-	private static function sync_aliases() {
+	protected function sync_aliases() {
 		// Get sites.
-		$sites = self::get_sites();
+		$sites = $this->get_sites();
 
 		// Iterate through all sites.
 		foreach ( $sites as $site ) {
-			self::status( "About to assign client aliases to site {$site->name}..." );
+			$this->status( "About to assign client aliases to site {$site->name}..." );
 
 			// The number of clients on the site that were assigned an alias.
 			$assigned_alias = 0;
 
 			// Get MAC address to alias mappings.
-			$macs = self::get_client_aliases_for_site( $site->name );
+			$macs = $this->get_client_aliases_for_site( $site->name );
 
 			// Get clients for the site being iterated.
-			$clients = self::get_clients( $site->name );
+			$clients = $this->get_clients( $site->name );
 			foreach ( $clients as $client ) {
 
 				// Set the current site.
@@ -450,12 +459,12 @@ class Syncer {
 
 						// Actually set the client alias unless doing a dry run.
 						if ( UNIFI_ALIAS_SYNC_DRY_RUN ) {
-							self::status( "\tWould have set alias for {$client->mac} to \"{$macs[ $client->mac ]}\"." );
+							$this->status( "\tWould have set alias for {$client->mac} to \"{$macs[ $client->mac ]}\"." );
 						} else {
 							$result = self::$unifi_connection->set_sta_name( $client->_id, $macs[ $client->mac ] );
 
 							if ( ! $result ) {
-								self::status( sprintf(
+								$this->status( sprintf(
 									"\tWarning: Unable to set alias for %s to \"%s\" (%s).",
 									$client->mac,
 									$macs[ $client->mac ],
@@ -463,7 +472,7 @@ class Syncer {
 								 ) );
 								$assigned_alias--;
 							} else {
-								self::status( "\tSetting alias for {$client->mac} to \"{$macs[ $client->mac ]}\"." );
+								$this->status( "\tSetting alias for {$client->mac} to \"{$macs[ $client->mac ]}\"." );
 							}
 						}
 
@@ -472,10 +481,10 @@ class Syncer {
 
 						// Report if client already has the given alias.
 						if ( $client->name === $macs[ $client->mac ] ) {
-							self::status( "\tClient {$client->mac} already has the alias \"{$client->name}\"." );
+							$this->status( "\tClient {$client->mac} already has the alias \"{$client->name}\"." );
 						// Else report client already has an alias that isn't being overridden.
 						} else {
-							self::status( "\tClient {$client->mac} already aliased as \"{$client->name}\" (thus not getting aliased as \"{$macs[ $client->mac ]}\")." );
+							$this->status( "\tClient {$client->mac} already aliased as \"{$client->name}\" (thus not getting aliased as \"{$macs[ $client->mac ]}\")." );
 						}
 
 					}
@@ -483,9 +492,9 @@ class Syncer {
 			}
 
 			if ( $assigned_alias ) {
-				self::status( "\tClients assigned an alias: {$assigned_alias}." );
+				$this->status( "\tClients assigned an alias: {$assigned_alias}." );
 			} else {
-				self::status( "\tNo clients assigned an alias." );
+				$this->status( "\tNo clients assigned an alias." );
 			}
 
 		}
@@ -500,7 +509,7 @@ class Syncer {
 	 *
 	 * @param string $message The message to output.
 	 */
-	private static function status( $message ) {
+	protected function status( $message ) {
 		echo $message . "\n";
 	}
 
@@ -512,7 +521,7 @@ class Syncer {
 	 * @param string $message The message to output. No need to append newline.
 	 *                        Default is ''.
 	 */
-	private static function bail( $message = '' ) {
+	protected function bail( $message = '' ) {
 		// Terminate the UniFi controller connection.
 		if ( self::$unifi_connection ) {
 			self::$unifi_connection->logout();
@@ -528,4 +537,4 @@ class Syncer {
 
 }
 
-Syncer::sync();
+Syncer::get_instance()->sync();
