@@ -574,7 +574,7 @@ class Syncer {
 	 * @return mixed
 	 */
 	protected function get_config( $config_name ) {
-		return defined( $config_name ) ? constant( $config_name ) : null;
+		return constant( $config_name ) ?? null;
 	}
 
 	/**
