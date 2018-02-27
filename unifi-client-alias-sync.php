@@ -83,7 +83,7 @@ class Syncer {
 		$sites = $this->get_sites();
 
 		// Exceptions are made if aliases are defined via config.
-		$has_config_aliases = (bool) count( UNIFI_ALIAS_SYNC_ALIASES );
+		$has_config_aliases = (bool) count( $this->get_config( 'UNIFI_ALIAS_SYNC_ALIASES' ) );
 
 		// Bail if there are less than two sites since that is the minimum needed in order to be able to sync client aliases across sites.
 		switch ( count( $sites ) ) {
@@ -100,9 +100,9 @@ class Syncer {
 
 		// Report on client aliases defined via config.
 		if ( $has_config_aliases ) {
-			$this->status( "\tUNIFI_ALIAS_SYNC_ALIASES has " . count( UNIFI_ALIAS_SYNC_ALIASES ) . ' client aliases defined.' );
+			$this->status( "\tUNIFI_ALIAS_SYNC_ALIASES has " . count( $this->get_config( 'UNIFI_ALIAS_SYNC_ALIASES' ) ) . ' client aliases defined.' );
 
-			foreach ( UNIFI_ALIAS_SYNC_ALIASES as $mac => $alias ) {
+			foreach ( $this->get_config( 'UNIFI_ALIAS_SYNC_ALIASES' ) as $mac => $alias ) {
 				$this->status( "\t\t'{$mac}' => '{$alias}'" );
 			}
 		}
@@ -136,14 +136,21 @@ class Syncer {
 
 		$this->status( 'Environment and config file have been verified.' );
 
-		if ( UNIFI_ALIAS_SYNC_DRY_RUN ) {
+		if ( $this->get_config( 'UNIFI_ALIAS_SYNC_DRY_RUN' ) ) {
 			$this->status( "UNIFI_ALIAS_SYNC_DRY_RUN mode enabled; aliases won't actually get synchronized." );
 		}
 
 		// Check for controller URL.
-		$controller_url = rtrim( UNIFI_ALIAS_SYNC_CONTROLLER, '/' );
+		$controller_url = rtrim( $this->get_config( 'UNIFI_ALIAS_SYNC_CONTROLLER' ), '/' );
 
-		self::$unifi_connection = new \UniFi_API\Client( UNIFI_ALIAS_SYNC_USER, UNIFI_ALIAS_SYNC_PASSWORD, $controller_url, 'default', '', UNIFI_ALIAS_SYNC_VERIFY_SSL );
+		self::$unifi_connection = new \UniFi_API\Client(
+			$this->get_config( 'UNIFI_ALIAS_SYNC_USER' ),
+			$this->get_config( 'UNIFI_ALIAS_SYNC_PASSWORD' ),
+			$controller_url,
+			'default',
+			'',
+			$this->get_config( 'UNIFI_ALIAS_SYNC_VERIFY_SSL' )
+		);
 
 		if ( $this->is_debug() ) {
 			self::$unifi_connection->set_debug( true );
@@ -160,7 +167,7 @@ class Syncer {
 	 * @return bool True if debug is enabled, false otherwise.
 	 */
 	protected function is_debug() {
-		return (bool) UNIFI_ALIAS_SYNC_DEBUG;
+		return (bool) $this->get_config( 'UNIFI_ALIAS_SYNC_DEBUG' );
 	}
 
 	/**
@@ -213,31 +220,33 @@ class Syncer {
 		// Check that required constants are defined. Don't bail immediately though,
 		// so multiple missing constants can be reported to user at once.
 		foreach ( $required_constants as $constant => $description ) {
-			if ( ! defined( $constant ) ) {
+			if ( is_null( $this->get_config( $constant ) ) ) {
 				$this->status( "Error: Required constant {$constant} was not defined: {$description}" );
 				$bail = true;
 			}
 		}
 
 		// Check that full URL for controller was supplied.
-		if ( defined( 'UNIFI_ALIAS_SYNC_CONTROLLER' ) ) {
-			if ( 0 !== strpos( UNIFI_ALIAS_SYNC_CONTROLLER, 'https://' ) ) {
+		$controller = $this->get_config( 'UNIFI_ALIAS_SYNC_CONTROLLER' );
+		if ( ! $controller ) {
+			if ( 0 !== strpos( $controller, 'https://' ) ) {
 				$this->status( "Error: The URL defined in UNIFI_ALIAS_SYNC_CONTROLLER does not include the protocol 'https://'." );
 				$bail = true;
 			}
-			if ( ! preg_match( '~:[0-9]+/?$~', UNIFI_ALIAS_SYNC_CONTROLLER ) ) {
+			if ( ! preg_match( '~:[0-9]+/?$~', $controller ) ) {
 				$this->status( "Error: The URL defined in UNIFI_ALIAS_SYNC_CONTROLLER does not include the port number. This is usually 8443 or 443." );
 				$bail = true;
 			}
 		}
 
 		// Check that aliases are defined properly.
-		if ( defined( 'UNIFI_ALIAS_SYNC_ALIASES' ) ) {
-			if ( ! is_array( UNIFI_ALIAS_SYNC_ALIASES ) ) {
-				$this->status( "Error: Invalid format for UNIFI_ALIAS_SYNC_ALIASES: " . UNIFI_ALIAS_SYNC_ALIASES );
+		$aliases = $this->get_config( 'UNIFI_ALIAS_SYNC_ALIASES' );
+		if ( ! is_null( $aliases ) ) {
+			if ( ! is_array( $aliases ) ) {
+				$this->status( "Error: Invalid format for UNIFI_ALIAS_SYNC_ALIASES: {$aliases}" );
 				$bail = true;
 			} else {
-				foreach ( UNIFI_ALIAS_SYNC_ALIASES as $mac => $alias ) {
+				foreach ( $aliases as $mac => $alias ) {
 					// Check MAC address.
 					if ( ! preg_match( '/^(?:[[:xdigit:]]{2}([-:]))(?:[[:xdigit:]]{2}\1){4}[[:xdigit:]]{2}$/', $mac ) ) {
 						$this->status( "Error: Invalid MAC address supplied in UNIFI_ALIAS_SYNC_ALIASES: {$mac}" );
@@ -254,8 +263,8 @@ class Syncer {
 
 		// For optional constants, define them with default values if not defined.
 		foreach ( $optional_constants as $constant => $default ) {
-			if ( ! defined( $constant ) ) {
-				define( $constant, $default );
+			if ( is_null( $this->get_config( $constant ) ) ) {
+				$this->set_config( $constant, $default );
 			}
 		}
 	}
@@ -298,7 +307,7 @@ class Syncer {
 	protected function prioritize_sites( $sites ) {
 		// Get explicitly prioritized sites.
 		$priority_sites = [];
-		foreach ( UNIFI_ALIAS_SYNC_PRIORITIZED_SITES as $site ) {
+		foreach ( $this->get_config( 'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' ) as $site ) {
 			if ( isset( $sites[ $site ] ) ) {
 				$priority_sites[ $site ] = $sites[ $site ];
 				// Remove priority site from regular consideration.
@@ -399,7 +408,7 @@ class Syncer {
 		$client_aliases = $this->get_aliased_clients();
 
 		// Aliases defined via constant take precedence and apply to all sites.
-		foreach ( UNIFI_ALIAS_SYNC_ALIASES as $mac => $alias ) {
+		foreach ( $this->get_config( 'UNIFI_ALIAS_SYNC_ALIASES' ) as $mac => $alias ) {
 			$macs[ $mac ] = $alias;
 		}
 
@@ -458,7 +467,7 @@ class Syncer {
 						$assigned_alias++;
 
 						// Actually set the client alias unless doing a dry run.
-						if ( UNIFI_ALIAS_SYNC_DRY_RUN ) {
+						if ( $this->get_config( 'UNIFI_ALIAS_SYNC_DRY_RUN' ) ) {
 							$this->status( "\tWould have set alias for {$client->mac} to \"{$macs[ $client->mac ]}\"." );
 						} else {
 							$result = self::$unifi_connection->set_sta_name( $client->_id, $macs[ $client->mac ] );
@@ -510,7 +519,11 @@ class Syncer {
 	 * @param string $message The message to output.
 	 */
 	protected function status( $message ) {
-		echo $message . "\n";
+		if ( ! $this->get_config( 'UNIFI_ALIAS_SYNC_DISABLE_STATUS' ) ) {
+			echo $message . "\n";
+		}
+
+		return $message;
 	}
 
 	/**
@@ -535,6 +548,38 @@ class Syncer {
 		die( $message );
 	}
 
+	/**
+	 * Gets the value of a config option.
+	 *
+	 * @access protected
+	 *
+	 * @param  string @config_name Name of the config option.
+	 * @return mixed
+	 */
+	protected function get_config( $config_name ) {
+		return defined( $config_name ) ? constant( $config_name ) : null;
+	}
+
+	/**
+	 * Sets the value of a config option.
+	 *
+	 * Since config options are implemented as constants, a given config option
+	 * can only be set once.
+	 *
+	 * @access protected
+	 *
+	 * @param  string $config_name Name of the config option.
+	 * @param  mixed  $value       Value for the config option.
+	 * @return bool   True if the config option was assigned a value, else false.
+	 */
+	protected function set_config( $config_name, $value ) {
+		if ( defined( $config_name ) ) {
+			return false;
+		}
+
+		define( $config_name, $value );
+		return true;
+	}
 }
 
 Syncer::get_instance()->sync();
