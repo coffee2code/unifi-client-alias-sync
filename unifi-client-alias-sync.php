@@ -160,7 +160,7 @@ class Syncer {
 	/**
 	 * Performs initialization checks and actions.
 	 *
-	 * @access private
+	 * @access protected
 	 */
 	protected function init() {
 		$this->verify_environment();
@@ -197,7 +197,7 @@ class Syncer {
 	/**
 	 * Determines if debug mode is enabled.
 	 *
-	 * @access private
+	 * @access protected
 	 *
 	 * @return bool True if debug is enabled, false otherwise.
 	 */
@@ -213,7 +213,7 @@ class Syncer {
 	 * - The config file exists
 	 * - The PHP directive 'allow_url_fopen' is enabled.
 	 *
-	 * @access private
+	 * @access protected
 	 */
 	protected function verify_environment() {
 		if ( ! file_exists( self::CONFIG_FILE ) ) {
@@ -230,7 +230,7 @@ class Syncer {
 	 * optional constants get defined with default values if they aren't
 	 * defined.
 	 *
-	 * @access private
+	 * @access protected
 	 */
 	protected function verify_config() {
 		// Flag for determining if an error was encountered.
@@ -329,7 +329,7 @@ class Syncer {
 	/**
 	 * Prioritizes a list of sites by precendence.
 	 *
-	 * @access private
+	 * @access protected
 	 *
 	 * @param  array $sites Associative array of sites with site names as keys and
 	 *                      site objects as values.
@@ -427,7 +427,7 @@ class Syncer {
 	/**
 	 * Returns the client aliases applicable to the given site.
 	 *
-	 * @access private
+	 * @access protected
 	 *
 	 * @param string $site_name Name of the site.
 	 * @return array
@@ -467,7 +467,7 @@ class Syncer {
 	/**
 	 * Syncs client aliases across all sites.
 	 *
-	 * @access private
+	 * @access protected
 	 */
 	protected function sync_aliases() {
 		// Get sites.
@@ -545,7 +545,7 @@ class Syncer {
 	 *
 	 * Auto-appends a newline to the message.
 	 *
-	 * @access private
+	 * @access protected
 	 *
 	 * @param string $message The message to output.
 	 */
@@ -560,7 +560,7 @@ class Syncer {
 	/**
 	 * Outputs a message and exits.
 	 *
-	 * @access private
+	 * @access protected
 	 *
 	 * @param string $message The message to output. No need to append newline.
 	 *                        Default is ''.
