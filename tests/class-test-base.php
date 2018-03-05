@@ -81,7 +81,8 @@ class UniFiClientAliasTestBase extends TestCase {
 		$class = new \ReflectionClass( 'UniFi_Client_Alias_Sync\TestSyncer' );
 		$static_var = $class->getProperty( $name );
 		$static_var->setAccessible( true );
-		return $static_var = $static_var->setValue( $value );
+		$static_var->setValue( $value );
+		return $value;
 	}
 
 	/**
