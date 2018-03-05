@@ -88,8 +88,21 @@ class Syncer {
 	 */
 	private static $client_aliases;
 
+	/**
+	 * The singleton instantiation of the class.
+	 *
+	 * @access protected
+	 * @var Syncer
+	 */
 	protected static $instance;
 
+	/**
+	 * Returns the singleton instance of this class, creating one if necessary.
+	 *
+	 * @access public
+	 *
+	 * @return Syncer
+	 */
 	public static function get_instance() {
 		if ( ! self::$instance ) {
 			self::$instance = new static();
