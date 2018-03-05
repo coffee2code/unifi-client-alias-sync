@@ -68,9 +68,9 @@ class Syncer {
 	 * Memoized storage for sites.
 	 *
 	 * @var array
-	 * @access private
+	 * @access protected
 	 */
-	private static $sites;
+	protected static $sites;
 
 	/**
 	 * Memoized storage for clients per site.
