@@ -33,11 +33,54 @@ class UniFiClientAliasTestBase extends TestCase {
 	];
 
 	/**
+	 * Mock sites.
+	 *
+	 * @access protected
+	 * @var array
+	 */
+	protected static $sites;
+
+	/**
 	 * Actions to perform before each test.
 	 */
 	public function setUp() {
 		// Reset settings to default values.
 		self::reset_config();
+
+		$this->mock_sites();
+	}
+
+	protected function mock_sites( $sites = null ) {
+		if ( is_null( $sites ) ) {
+			$sites = self::$sites = [
+				'default' => (object) [
+					'name' => 'default',
+					'desc' => 'Default',
+				],
+				'cd90qe2s' => (object) [
+					'name' => 'cd90qe2s',
+					'desc' => 'Charlie Site',
+				],
+				'9lirxq5p' => (object) [
+					'name' => '9lirxq5p',
+					'desc' => 'Sample Site',
+				],
+				'a98ey4l5' => (object) [
+					'name' => 'a98ey4l5',
+					'desc' => 'Alpha Site',
+				],
+				'1qwe314gn' => (object) [
+					'name' => '1qwe314gn',
+					'desc' => 'Test Site',
+				],
+			];
+		} else {
+			$sites = array();
+		}
+
+		$this->set_static_var( 'sites', $sites );
+
+		return $sites;
 	}
 
 	/**

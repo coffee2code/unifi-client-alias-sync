@@ -12,30 +12,6 @@ use PHPUnit\Framework\TestCase;
 
 final class UniFiClientAliasSitesTest extends UniFiClientAliasTestBase {
 
-	/**
-	 * Mock site names and values.
-	 *
-	 * @access protected
-	 * @var array
-	 */
-	protected static $sites = [
-		'default' => [
-			'name' => 'Default',
-		],
-		'cd90qe2s' => [
-			'name' => 'Charlie Site',
-		],
-		'9lirxq5p' => [
-			'name' => 'Sample Site',
-		],
-		'a98ey4l5' => [
-			'name' => 'Alpha Site',
-		],
-		'1qwe314gn' => [
-			'name' => 'Test Site',
-		],
-	];
-
 	protected function sort_sites( $sites ) {
 		$sorted_sites = [];
 
@@ -55,6 +31,9 @@ final class UniFiClientAliasSitesTest extends UniFiClientAliasTestBase {
 	}
 
 	public function test_get_sites_with_no_sites() {
+		// Unset mocked sites.
+		$this->mock_sites( [] );
+
 		$test = self::get_method( 'get_sites' );
 
 		$sites = $test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
@@ -65,11 +44,9 @@ final class UniFiClientAliasSitesTest extends UniFiClientAliasTestBase {
 	public function test_get_sites_with_sites() {
 		$_sites = self::$sites;
 
-		$this->set_static_var( 'sites', $_sites );
-
 		$test = self::get_method( 'get_sites' );
 
-		$sites = (array) $test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+		$sites = $test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
 
 		$_sites = $this->sort_sites( $_sites );
 
