@@ -293,25 +293,26 @@ class Syncer {
 	 *
 	 * @access protected
 	 *
-	 * @return array Associative array of sites with site names as keys and site objects as values.
+	 * @return array Associative array of sites with site names as keys and site
+	 *               objects as values, ordered in descending order by priority.
 	 */
 	protected function get_sites() {
-		// Return value if memoized.
 		if ( self::$sites ) {
-			return self::$sites;
-		}
+			$sites = self::$sites;
+		} else {
+			$sites = [];
+			$sites_resp = self::$unifi_connection->list_sites();
 
-		$sites = [];
-
-		$sites_resp = self::$unifi_connection->list_sites();
-
-		foreach ( (array) $sites_resp as $site ) {
-			if ( ! empty( $site->name ) ) {
-				$sites[ $site->name ] = $site;
+			foreach ( (array) $sites_resp as $site ) {
+				if ( ! empty( $site->name ) ) {
+					$sites[ $site->name ] = $site;
+				}
 			}
+
+			self::$sites = $sites;
 		}
 
-		return self::$sites = $this->prioritize_sites( $sites );
+		return $this->prioritize_sites( $sites );
 	}
 
 	/**
