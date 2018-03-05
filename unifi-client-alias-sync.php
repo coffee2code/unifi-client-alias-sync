@@ -428,7 +428,12 @@ class Syncer {
 				$client_aliases[ $site->name ] = $aliased_clients;
 			}
 
-			$this->status( "\tSite {$site->name} has " . count( $clients ) . ' clients, ' . count( $aliased_clients ) . ' of which are aliased.' );
+			$this->status( sprintf(
+				"\tSite %s has %d clients, %d of which are aliased.",
+				$site->name,
+				count( $clients ),
+				count( $aliased_clients )
+			) );
 			foreach ( $aliased_clients as $ac ) {
 				$this->status( "\t\t'{$ac->mac}' => '{$ac->name}'" );
 			}
