@@ -131,6 +131,22 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 		$test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
 	}
 
+	public function test_prioritized_sites_must_be_array() {
+		$message = "Error: Invalid format for UNIFI_ALIAS_SYNC_PRIORITIZED_SITES (must be array): %s\n" . self::$exception_message . "\n";
+
+		foreach ( [ '', true, false, 0, 1 ] as $value ) {
+			UniFi_Client_Alias_Sync\TestSyncer::get_instance()->set_config( 'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES', $value );
+
+			$test = self::get_method( 'verify_config' );
+
+			$this->expectException( Exception::class );
+			$this->expectExceptionMessage( self::$exception_message );
+			$this->expectOutputString( sprintf( $message, $value ) );
+
+			$test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+		}
+	}
+
 	public function test_aliases_must_be_array() {
 		$message = "Error: Invalid format for UNIFI_ALIAS_SYNC_ALIASES: %s\n" . self::$exception_message . "\n";
 

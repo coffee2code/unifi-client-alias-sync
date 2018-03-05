@@ -277,6 +277,13 @@ class Syncer {
 			}
 		}
 
+		// Check that UNIFI_ALIAS_SYNC_PRIORITIZED_SITES, if present, is an array.
+		$prioritized_sites = $this->get_config( 'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' );
+		if ( ! is_null( $prioritized_sites ) && ! is_array( $prioritized_sites ) ) {
+			$this->status( "Error: Invalid format for UNIFI_ALIAS_SYNC_PRIORITIZED_SITES (must be array): {$prioritized_sites}" );
+			$bail = true;
+		}
+
 		// Truly bail if an error was encountered.
 		if ( $bail ) {
 			$this->bail( 'Terminating script for invalid config file.' );
