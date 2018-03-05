@@ -76,9 +76,9 @@ class Syncer {
 	 * Memoized storage for clients per site.
 	 *
 	 * @var array
-	 * @access private
+	 * @access protected
 	 */
-	private static $clients;
+	protected static $clients;
 
 	/**
 	 * Memoized storage for client aliases by site.
@@ -390,8 +390,12 @@ class Syncer {
 	protected function get_clients( $site_name ) {
 		// If not already memoized, make the request for the site's clients.
 		if ( empty( self::$clients[ $site_name ] ) ) {
-			self::$unifi_connection->set_site( $site_name );
-			self::$clients[ $site_name ] = self::$unifi_connection->stat_allusers();
+			if ( $this->get_config( 'UNIFI_ALIAS_SYNC_TESTING' ) ) {
+				self::$clients[ $site_name ] = [];
+			} else {
+				self::$unifi_connection->set_site( $site_name );
+				self::$clients[ $site_name ] = self::$unifi_connection->stat_allusers();
+			}
 		}
 
 		return self::$clients[ $site_name ];
