@@ -29,6 +29,7 @@ class UniFiClientAliasTestBase extends TestCase {
 		'UNIFI_ALIAS_SYNC_ALIASES'           => [],
 		'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' => [],
 		'UNIFI_ALIAS_SYNC_DISABLE_STATUS'    => false,
+		'UNIFI_ALIAS_SYNC_TESTING'           => true,
 	];
 
 	/**

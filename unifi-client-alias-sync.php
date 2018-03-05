@@ -51,6 +51,8 @@ class Syncer {
 		'UNIFI_ALIAS_SYNC_DEBUG'             => false,
 		'UNIFI_ALIAS_SYNC_ALIASES'           => [],
 		'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' => [],
+		// Not for general use.
+		'UNIFI_ALIAS_SYNC_TESTING'           => false,
 	);
 
 
@@ -299,6 +301,8 @@ class Syncer {
 	protected function get_sites() {
 		if ( self::$sites ) {
 			$sites = self::$sites;
+		} elseif ( $this->get_config( 'UNIFI_ALIAS_SYNC_TESTING' ) ) {
+			$sites = [];
 		} else {
 			$sites = [];
 			$sites_resp = self::$unifi_connection->list_sites();
