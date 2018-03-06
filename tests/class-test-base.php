@@ -41,6 +41,14 @@ class UniFiClientAliasTestBase extends TestCase {
 	protected static $sites;
 
 	/**
+	 * Mock clients per site.
+	 *
+	 * @access protected
+	 * @var array
+	 */
+	protected static $clients;
+
+	/**
 	 * Actions to perform before each test.
 	 */
 	public function setUp() {
@@ -81,6 +89,78 @@ class UniFiClientAliasTestBase extends TestCase {
 		$this->set_static_var( 'sites', $sites );
 
 		return $sites;
+	}
+
+	protected function mock_clients( $clients = null ) {
+		if ( is_null( $clients ) ) {
+			$clients = self::$clients = [
+				'default' => [
+					(object) [
+						'mac'  => '9e:cc:a1:2f:0b:aa',
+					],
+					(object) [
+						'mac'  => '90:04:e3:51:9d:a1',
+						'name' => "Adam's iPhone 8",
+					],
+					(object) [
+						'mac'  => '35:19:29:f5:4b:1e',
+						'name' => "Brenda's Note 8",
+					],
+					(object) [
+						'mac'  => 'e4:d9:c7:cc:46:3b',
+						'name' => "HP Inkjet Printer",
+					],
+				],
+				'cd90qe2s' => [
+					(object) [
+						// Intentionally unaliased
+						'mac'  => 'b3:ae:91:cd:3d:c1',
+					],
+					(object) [
+						// Intentionally identical to client of 'default'
+						'mac'  => '35:19:29:f5:4b:1e',
+						'name' => "Brenda's Note 8",
+					],
+				],
+				'9lirxq5p' => [
+					(object) [
+						'mac'  => '33:4a:a0:5c:52:15',
+					],
+					(object) [
+						// Intentionally unaliased instance of aliased client of 'default'
+						'mac'  => '90:04:e3:51:9d:a1',
+					],
+					(object) [
+						// Intentionally different alias than client of 'default'
+						'mac'  => '90:04:e3:51:9d:a1',
+						'name' => "iPhone 8 - Adam",
+					],
+					(object) [
+						// Explicit alias for unaliased client of 'default'
+						'mac'  => '9e:cc:a1:2f:0b:aa',
+						'name' => "iPad X - Walter",
+					],
+				],
+				// Site with multiple unaliased clients
+				'a98ey4l5' => [
+					(object) [
+						'mac'  => 'f2:ab:4e:e2:fa:fa',
+					],
+					(object) [
+						'mac'  => 'd5:67:1a:f8:7e:0a',
+					],
+				],
+				// Site with no clients
+				'1qwe314gn' => [
+				],
+			];
+		} else {
+			$clients = [];
+		}
+
+		$this->set_static_var( 'clients', $clients );
+
+		return $clients;
 	}
 
 	/**
