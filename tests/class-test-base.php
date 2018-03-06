@@ -133,7 +133,7 @@ class UniFiClientAliasTestBase extends TestCase {
 					],
 					(object) [
 						// Intentionally unaliased instance of aliased client of 'default'
-						'mac'  => '90:04:e3:51:9d:a1',
+						'mac'  => 'e4:d9:c7:cc:46:3b',
 					],
 					(object) [
 						// Intentionally different alias than client of 'default'
