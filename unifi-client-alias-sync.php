@@ -585,7 +585,7 @@ class Syncer {
 	}
 
 	/**
-	 * Outputs a message and exits.
+	 * Outputs a message and throws an exception.
 	 *
 	 * @access protected
 	 *

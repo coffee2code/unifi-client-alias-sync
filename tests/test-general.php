@@ -52,4 +52,32 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 		$this->assertEmpty( $status );
 	}
 
+	public function test_bail() {
+		$message = "This is a test message.";
+
+		$test = self::get_method( 'bail' );
+
+		$this->expectException( Exception::class );
+		$this->expectExceptionMessage( $message );
+		$this->expectOutputString( $message . "\n" );
+
+		$clients = $test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( $message ) );
+	}
+
+	public function test_bail_when_output_disabled() {
+		$message = "This is a test message.";
+
+		$this->set_config( 'UNIFI_ALIAS_SYNC_DISABLE_STATUS', true );
+
+		$test = self::get_method( 'bail' );
+
+		$this->expectException( Exception::class );
+		$this->expectExceptionMessage( $message );
+		$this->expectOutputRegex( '/^$/' );
+
+		$clients = $test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( $message ) );
+
+		$this->set_config( 'UNIFI_ALIAS_SYNC_DISABLE_STATUS', false );
+	}
+
 }
