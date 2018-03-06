@@ -66,13 +66,13 @@ class UniFiClientAliasTestBase extends TestCase {
 	protected function mock_sites( $sites = null ) {
 		if ( is_null( $sites ) ) {
 			$sites = self::$sites = [
-				'default' => (object) [
-					'name' => 'default',
-					'desc' => 'Default',
-				],
 				'cd90qe2s' => (object) [
 					'name' => 'cd90qe2s',
 					'desc' => 'Charlie Site',
+				],
+				'default' => (object) [
+					'name' => 'default',
+					'desc' => 'Default',
 				],
 				'9lirxq5p' => (object) [
 					'name' => '9lirxq5p',
@@ -99,6 +99,17 @@ class UniFiClientAliasTestBase extends TestCase {
 	protected function mock_clients( $clients = null ) {
 		if ( is_null( $clients ) ) {
 			$clients = self::$clients = [
+				'cd90qe2s' => [
+					(object) [
+						// Intentionally unaliased
+						'mac'  => 'b3:ae:91:cd:3d:c1',
+					],
+					(object) [
+						// Intentionally identical to client of 'default'
+						'mac'  => '35:19:29:f5:4b:1e',
+						'name' => "Brenda's Note 8",
+					],
+				],
 				'default' => [
 					(object) [
 						'mac'  => '9e:cc:a1:2f:0b:aa',
@@ -114,17 +125,6 @@ class UniFiClientAliasTestBase extends TestCase {
 					(object) [
 						'mac'  => 'e4:d9:c7:cc:46:3b',
 						'name' => "HP Inkjet Printer",
-					],
-				],
-				'cd90qe2s' => [
-					(object) [
-						// Intentionally unaliased
-						'mac'  => 'b3:ae:91:cd:3d:c1',
-					],
-					(object) [
-						// Intentionally identical to client of 'default'
-						'mac'  => '35:19:29:f5:4b:1e',
-						'name' => "Brenda's Note 8",
 					],
 				],
 				'9lirxq5p' => [
