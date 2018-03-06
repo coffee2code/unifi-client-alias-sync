@@ -52,6 +52,11 @@ class UniFiClientAliasTestBase extends TestCase {
 	 * Actions to perform before each test.
 	 */
 	public function setUp() {
+		$this->set_static_var( 'instance', null );
+		$this->set_static_var( 'sites', null );
+		$this->set_static_var( 'clients', null );
+		$this->set_static_var( 'client_aliases', null );
+
 		// Reset settings to default values.
 		self::reset_config();
 

@@ -84,9 +84,9 @@ class Syncer {
 	 * Memoized storage for client aliases by site.
 	 *
 	 * @var array
-	 * @access private
+	 * @access protected
 	 */
-	private static $client_aliases;
+	protected static $client_aliases;
 
 	/**
 	 * The singleton instantiation of the class.
