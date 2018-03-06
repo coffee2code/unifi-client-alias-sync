@@ -185,9 +185,13 @@ class UniFiClientAliasTestBase extends TestCase {
 	 * @access protected
 	 */
 	protected static function reset_config() {
-		foreach ( self::$default_config as $config => $value ) {
-			UniFi_Client_Alias_Sync\TestSyncer::get_instance()->set_config( $config, $value );
+		foreach ( self::$default_config as $setting => $value ) {
+			self::set_config( $setting, $value );
 		}
+	}
+
+	protected static function set_config( $setting, $value ) {
+		UniFi_Client_Alias_Sync\TestSyncer::get_instance()->set_config( $setting, $value );
 	}
 
 	/**
