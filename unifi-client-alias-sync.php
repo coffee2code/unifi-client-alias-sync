@@ -457,6 +457,11 @@ class Syncer {
 	protected function get_client_aliases_for_site( $site_name ) {
 		$macs = [];
 
+		// Bail if unknown site name.
+		if ( ! array_key_exists( $site_name, $this->get_sites() ) ) {
+			return $macs;
+		}
+
 		// Get a list of aliased clients per site.
 		$client_aliases = $this->get_aliased_clients();
 
