@@ -613,7 +613,12 @@ class Syncer {
 
 					// Else an alias cannot be overridden.
 					} else {
-						$this->status( "\tClient {$client->mac} already aliased as \"{$client->name}\" (thus not getting aliased as \"{$macs[ $client->mac ]}\")." );
+						$this->status( sprintf(
+							"\tClient %s already aliased as \"%s\" (thus not getting aliased as \"%s\").",
+							$client->mac,
+							$client->name,
+							$macs[ $client->mac ]
+						) );
 					}
 				}
 			}
