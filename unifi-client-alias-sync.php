@@ -193,20 +193,22 @@ class Syncer {
 		// Check for controller URL.
 		$controller_url = rtrim( $this->get_config( 'UNIFI_ALIAS_SYNC_CONTROLLER' ), '/' );
 
-		self::$unifi_connection = new \UniFi_API\Client(
-			$this->get_config( 'UNIFI_ALIAS_SYNC_USER' ),
-			$this->get_config( 'UNIFI_ALIAS_SYNC_PASSWORD' ),
-			$controller_url,
-			'default',
-			'',
-			$this->get_config( 'UNIFI_ALIAS_SYNC_VERIFY_SSL' )
-		);
+		if ( ! $this->get_config( 'UNIFI_ALIAS_SYNC_TESTING' ) ) {
+			self::$unifi_connection = new \UniFi_API\Client(
+				$this->get_config( 'UNIFI_ALIAS_SYNC_USER' ),
+				$this->get_config( 'UNIFI_ALIAS_SYNC_PASSWORD' ),
+				$controller_url,
+				'default',
+				'',
+				$this->get_config( 'UNIFI_ALIAS_SYNC_VERIFY_SSL' )
+			);
 
-		if ( $this->is_debug() ) {
-			self::$unifi_connection->set_debug( true );
+			if ( $this->is_debug() ) {
+				self::$unifi_connection->set_debug( true );
+			}
+
+			self::$unifi_connection->login();
 		}
-
-		self::$unifi_connection->login();
 	}
 
 	/**
@@ -519,7 +521,9 @@ class Syncer {
 			foreach ( $clients as $client ) {
 
 				// Set the current site.
-				self::$unifi_connection->set_site( $site->name );
+				if ( self::$unifi_connection ) {
+					self::$unifi_connection->set_site( $site->name );
+				}
 
 				// If there is an alias for the client
 				if ( isset( $macs[ $client->mac ] ) ) {
@@ -532,14 +536,19 @@ class Syncer {
 						if ( $this->get_config( 'UNIFI_ALIAS_SYNC_DRY_RUN' ) ) {
 							$this->status( "\tWould have set alias for {$client->mac} to \"{$macs[ $client->mac ]}\"." );
 						} else {
-							$result = self::$unifi_connection->set_sta_name( $client->_id, $macs[ $client->mac ] );
+							if ( $this->get_config( 'UNIFI_ALIAS_SYNC_TESTING' ) ) {
+								// When testing, pretend setting client alias is successful.
+								$result = true;
+							} elseif ( self::$unifi_connection ) {
+								self::$unifi_connection->set_sta_name( $client->_id, $macs[ $client->mac ] );
+							}
 
 							if ( ! $result ) {
 								$this->status( sprintf(
 									"\tWarning: Unable to set alias for %s to \"%s\" (%s).",
 									$client->mac,
 									$macs[ $client->mac ],
-									self::$unifi_connection->get_last_error_message()
+									self::$unifi_connection ? self::$unifi_connection->get_last_error_message() : 'No connection to controller'
 								 ) );
 								$assigned_alias--;
 							} else {
