@@ -62,7 +62,8 @@ final class UniFiClientAliasClientsTest extends UniFiClientAliasTestBase {
 	public function test_get_aliased_clients() {
 		$test = self::get_method( 'get_aliased_clients' );
 
-		$string = "\tSite default has 4 clients, 3 of which are aliased.
+		$string = <<<TEXT
+	Site default has 4 clients, 3 of which are aliased.
 		'90:04:e3:51:9d:a1' => 'Adam's iPhone 8'
 		'35:19:29:f5:4b:1e' => 'Brenda's Note 8'
 		'e4:d9:c7:cc:46:3b' => 'HP Inkjet Printer'
@@ -74,7 +75,8 @@ final class UniFiClientAliasClientsTest extends UniFiClientAliasTestBase {
 	Site cd90qe2s has 3 clients, 2 of which are aliased.
 		'35:19:29:f5:4b:1e' => 'Brenda's Note 8'
 		'bc:3e:ea:26:8d:50' => 'Only on lowest priority site'
-";
+
+TEXT;
 
 		$this->expectOutputString( $string );
 
