@@ -10,7 +10,7 @@ A few things to note:
 * A client alias can only be synced to a site to which the client has connected to within the last year. Running the script periodically will help to sync aliases to clients on sites they've only ever visited since the latest sync, in addition to syncing newly added aliases.
 * Once an alias for a client is found, that alias is used to sync across sites, taking precendence over a potentially different alias for that client that may be subsequently encountered. Therefore, the order of traversal for sites matters. The script can be configured to prioritize certain sites over others.
 * Barring explicit site priority ordering (see info on `UNIFI_ALIAS_SYNC_PRIORITIZED_SITES`) the site with the name "default", if present, takes precedence over all other sites. The remaining sites are ordered alphabetically by name.
-* If a client has an alias on a given site, that alias is not overridden under any circumstances. (A future version may introduce this capability.)
+* By default, if a client has an alias on a given site, that alias is not overridden. See info on `UNIFI_ALIAS_SYNC_ALLOW_OVERWRITES` to allow aliases to be overwritten. Bear in mind that the priority of sites becomes even more critical in this scenario.
 * Makes use of Ubiquiti's UniFi Controller API. Versions 4.x.x and 5.x.x of the UniFi Controller software are supported (version 5.6.29 has been confirmed to work).
 * Disclaimer: Many of the functions in the underlying API client class are not officially supported by Ubiquiti Networks and, as such, may not be supported in future versions of the UniFi Controller API.
 
@@ -30,9 +30,10 @@ A few things to note:
      - `UNIFI_ALIAS_SYNC_CONTROLLER`: the fully qualified URL of the controller with protocol and port number (e.g. https://example.com:8443)
      - `UNIFI_ALIAS_SYNC_USER`: the admin username for the controller
      - `UNIFI_ALIAS_SYNC_PASSWORD`: the password for the admin user
-   - Five constants are optional:
+   - Six constants are optional:
      - `UNIFI_ALIAS_SYNC_DRY_RUN`: should the script operate in a dry run mode, which doesn't actually change any data?
      - `UNIFI_ALIAS_SYNC_DEBUG`: should the script operate in debug mode, which provides more verbose output about what is happening and what may have gone wrong?
+     - `UNIFI_ALIAS_SYNC_ALLOW_OVERWRITES`: should the script be allowed to overwrite a client alias with a different alias from a higher priority site?
      - `UNIFI_ALIAS_SYNC_ALIASES`: associative array of client MAC addresses and their associated aliases; use this if you want to proactively set client aliases across sites
      - `UNIFI_ALIAS_SYNC_PRIORITIZED_SITES` : array of sites to be given explicit priority ahead of any unspecified sites
      - `UNIFI_ALIAS_SYNC_VERIFY_SSL`: should the SSL connection to the controller should be verified?

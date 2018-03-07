@@ -71,8 +71,9 @@ final class UniFiClientAliasClientsTest extends UniFiClientAliasTestBase {
 		'90:04:e3:51:9d:a1' => 'iPhone 8 - Adam'
 		'9e:cc:a1:2f:0b:aa' => 'iPad X - Walter'
 	Site a98ey4l5 has 2 clients, 0 of which are aliased.
-	Site cd90qe2s has 2 clients, 1 of which are aliased.
+	Site cd90qe2s has 3 clients, 2 of which are aliased.
 		'35:19:29:f5:4b:1e' => 'Brenda's Note 8'
+		'bc:3e:ea:26:8d:50' => 'Only on lowest priority site'
 ";
 
 		$this->expectOutputString( $string );

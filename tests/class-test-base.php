@@ -27,6 +27,7 @@ class UniFiClientAliasTestBase extends TestCase {
 		'UNIFI_ALIAS_SYNC_DRY_RUN'           => true,
 		'UNIFI_ALIAS_SYNC_DEBUG'             => false,
 		'UNIFI_ALIAS_SYNC_ALIASES'           => [],
+		'UNIFI_ALIAS_SYNC_ALLOW_OVERWRITES'  => false,
 		'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' => [],
 		'UNIFI_ALIAS_SYNC_DISABLE_STATUS'    => false,
 		'UNIFI_ALIAS_SYNC_TESTING'           => true,
@@ -108,6 +109,11 @@ class UniFiClientAliasTestBase extends TestCase {
 						// Intentionally identical to client of 'default'
 						'mac'  => '35:19:29:f5:4b:1e',
 						'name' => "Brenda's Note 8",
+					],
+					(object) [
+						// Aliased client on lowest priority site that doesn't appear on higher priority sites
+						'mac'  => 'bc:3e:ea:26:8d:50',
+						'name' => "Only on lowest priority site",
 					],
 				],
 				'default' => [

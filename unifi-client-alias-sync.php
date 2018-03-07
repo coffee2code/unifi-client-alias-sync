@@ -50,6 +50,7 @@ class Syncer {
 		'UNIFI_ALIAS_SYNC_DRY_RUN'           => true,
 		'UNIFI_ALIAS_SYNC_DEBUG'             => false,
 		'UNIFI_ALIAS_SYNC_ALIASES'           => [],
+		'UNIFI_ALIAS_SYNC_ALLOW_OVERWRITES'  => false,
 		'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' => [],
 		// Not for general use.
 		'UNIFI_ALIAS_SYNC_TESTING'           => false,
@@ -296,6 +297,13 @@ class Syncer {
 			}
 		}
 
+		// Check that UNIFI_ALIAS_SYNC_ALLOW_OVERWRITES, if present, is a boolean.
+		$allow_overwrites = $this->get_config( 'UNIFI_ALIAS_SYNC_ALLOW_OVERWRITES' );
+		if ( ! is_null( $allow_overwrites ) && ! is_bool( $allow_overwrites ) ) {
+			$this->status( "Error: Invalid format for UNIFI_ALIAS_SYNC_ALLOW_OVERWRITES (must be boolean): {$allow_overwrites}" );
+			$bail = true;
+		}
+
 		// Check that UNIFI_ALIAS_SYNC_PRIORITIZED_SITES, if present, is an array.
 		$prioritized_sites = $this->get_config( 'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' );
 		if ( ! is_null( $prioritized_sites ) && ! is_array( $prioritized_sites ) ) {
@@ -476,6 +484,19 @@ class Syncer {
 			$macs[ $mac ] = $alias;
 		}
 
+		// Get an associative array of site names and their aliases (as arrays).
+		$site_names = array_keys( $client_aliases );
+		$site_names_with_aliases = [];
+		foreach ( $client_aliases as $alias_site_name => $aliases ) {
+			$a = [];
+			foreach ( $aliases as $alias ) {
+				$a[ $alias->mac ] = $alias->name;
+			}
+			$site_names_with_aliases[ $alias_site_name ] = $a;
+		}
+		// Position relative to other sites for the current site.
+		$site_pos = array_search( $site_name, $site_names );
+
 		// Get a list of all aliases that apply to the site.
 		foreach ( $client_aliases as $alias_site_name => $aliases ) {
 
@@ -486,10 +507,23 @@ class Syncer {
 
 			// Store the MAC address and alias mapping.
 			foreach ( $aliases as $alias ) {
-				// Sites are ordered by precedence, so don't override existing alias mapping.
-				if ( empty( $macs[ $alias->mac ] ) ) {
+
+				// Only accept alias for aliased client from higher priority sites.
+				if ( $site_pos > array_search( $alias_site_name, $site_names ) ) {
+					// ...but only if an alias hasn't already been found.
+					if ( empty( $macs[ $alias->mac ] ) ) {
+						$macs[ $alias->mac ] = $alias->name;
+					}
+				}
+				// Else if it the site already has an aliases for this client, do nothing.
+				elseif ( ! empty( $site_names_with_aliases[ $site_name ][ $alias->mac ] ) ) {
+					// Do nothing
+				}
+				// Else if an alias hasn't already been found.
+				elseif ( empty( $macs[ $alias->mac ] ) ) {
 					$macs[ $alias->mac ] = $alias->name;
 				}
+
 			}
 
 		}
@@ -528,13 +562,27 @@ class Syncer {
 				// If there is an alias for the client
 				if ( isset( $macs[ $client->mac ] ) ) {
 
-					// And if the client doesn't already have an alias, assign alias.
-					if ( empty( $client->name ) ) {
+					// If client already has the given alias.
+					if ( ! empty( $client->name ) && $client->name === $macs[ $client->mac ] ) {
+						$this->status( "\tClient {$client->mac} already has the alias \"{$client->name}\"." );
+					}
+
+					// Elseif if the client doesn't already have an alias or its name can be overwritten
+					elseif ( empty( $client->name ) || $this->get_config( 'UNIFI_ALIAS_SYNC_ALLOW_OVERWRITES' ) ) {
 						$assigned_alias++;
 
 						// Actually set the client alias unless doing a dry run.
 						if ( $this->get_config( 'UNIFI_ALIAS_SYNC_DRY_RUN' ) ) {
-							$this->status( "\tWould have set alias for {$client->mac} to \"{$macs[ $client->mac ]}\"." );
+							if ( empty( $client->name ) ) {
+								$this->status( "\tWould have set alias for {$client->mac} to \"{$macs[ $client->mac ]}\"." );
+							} else {
+								$this->status( sprintf(
+									"\tWould have set alias for %s to \"%s\" (overwriting existing alias of \"%s\").",
+									$client->mac,
+									$macs[ $client->mac ],
+									$client->name
+								) );
+							}
 						} else {
 							if ( $this->get_config( 'UNIFI_ALIAS_SYNC_TESTING' ) ) {
 								// When testing, pretend setting client alias is successful.
@@ -551,6 +599,13 @@ class Syncer {
 									self::$unifi_connection ? self::$unifi_connection->get_last_error_message() : 'No connection to controller'
 								 ) );
 								$assigned_alias--;
+							} elseif ( $this->get_config( 'UNIFI_ALIAS_SYNC_ALLOW_OVERWRITES' ) ) {
+								$this->status( sprintf(
+									"\tSetting alias for %s to \"%s\" (overwriting existing alias of \"%s\").",
+									$client->mac,
+									$macs[ $client->mac ],
+									$client->name
+								) );
 							} else {
 								$this->status( "\tSetting alias for {$client->mac} to \"{$macs[ $client->mac ]}\"." );
 							}
@@ -558,15 +613,7 @@ class Syncer {
 
 					// Else an alias cannot be overridden.
 					} else {
-
-						// Report if client already has the given alias.
-						if ( $client->name === $macs[ $client->mac ] ) {
-							$this->status( "\tClient {$client->mac} already has the alias \"{$client->name}\"." );
-						// Else report client already has an alias that isn't being overridden.
-						} else {
-							$this->status( "\tClient {$client->mac} already aliased as \"{$client->name}\" (thus not getting aliased as \"{$macs[ $client->mac ]}\")." );
-						}
-
+						$this->status( "\tClient {$client->mac} already aliased as \"{$client->name}\" (thus not getting aliased as \"{$macs[ $client->mac ]}\")." );
 					}
 				}
 			}

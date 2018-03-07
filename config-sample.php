@@ -94,6 +94,17 @@ define( 'UNIFI_ALIAS_SYNC_ALIASES',    [
 
 
 /**
+ * Boolean flag indicating if aliases can be overwritten.
+ *
+ * If enabled, client aliases defined at a higher priority will potentially
+ * overwrite existing client aliases defined on lower priority sites.
+ *
+ * @var bool
+ */
+define( 'UNIFI_ALIAS_SYNC_ALLOW_OVERWRITES', false );
+
+
+/**
  * Explicitly prioritized list of sites.
  *
  * Array of site names. The order of sites is important in determining where a
