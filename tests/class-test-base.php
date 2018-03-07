@@ -98,7 +98,7 @@ class UniFiClientAliasTestBase extends TestCase {
 				],
 			];
 		} else {
-			$sites = array();
+			$sites = [];
 		}
 
 		$this->set_static_var( 'sites', $sites );

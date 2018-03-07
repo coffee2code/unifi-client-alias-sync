@@ -21,7 +21,7 @@ final class UniFiClientAliasClientsTest extends UniFiClientAliasTestBase {
 	public function test_get_clients_for_invalid_site() {
 		$test = self::get_method( 'get_clients' );
 
-		$clients = $test->invokeArgs( self::$syncer, array( 'invalid' ) );
+		$clients = $test->invokeArgs( self::$syncer, [ 'invalid' ] );
 
 		$this->assertEmpty( $clients );
 	}
@@ -31,7 +31,7 @@ final class UniFiClientAliasClientsTest extends UniFiClientAliasTestBase {
 
 		$test = self::get_method( 'get_clients' );
 
-		$clients = $test->invokeArgs( self::$syncer, array( '1qwe314gn' ) );
+		$clients = $test->invokeArgs( self::$syncer, [ '1qwe314gn' ] );
 
 		$this->assertEmpty( $clients );
 	}
@@ -42,7 +42,7 @@ final class UniFiClientAliasClientsTest extends UniFiClientAliasTestBase {
 		$test = self::get_method( 'get_clients' );
 
 		foreach ( array_keys( $_clients ) as $site ) {
-			$clients = $test->invokeArgs( self::$syncer, array( $site ) );
+			$clients = $test->invokeArgs( self::$syncer, [ $site ] );
 
 			$this->assertEquals( $_clients[ $site ], $clients );
 		}

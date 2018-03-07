@@ -26,7 +26,7 @@ final class UniFiClientAliasAliasesTest extends UniFiClientAliasTestBase {
 	public function test_get_client_aliases_for_site_for_invalid_site() {
 		$test = self::get_method( 'get_client_aliases_for_site' );
 
-		$aliases = $test->invokeArgs( self::$syncer, array( 'invalid' ) );
+		$aliases = $test->invokeArgs( self::$syncer, [ 'invalid' ] );
 
 		$this->assertEmpty( $aliases );
 	}
@@ -41,7 +41,7 @@ final class UniFiClientAliasAliasesTest extends UniFiClientAliasTestBase {
 
 		$test = self::get_method( 'get_client_aliases_for_site' );
 
-		$aliases = $test->invokeArgs( self::$syncer, array( 'cd90qe2s' ) );
+		$aliases = $test->invokeArgs( self::$syncer, [ 'cd90qe2s' ] );
 
 		$this->assertEquals( $expected, $aliases );
 	}
@@ -54,7 +54,7 @@ final class UniFiClientAliasAliasesTest extends UniFiClientAliasTestBase {
 
 		$test = self::get_method( 'get_client_aliases_for_site' );
 
-		$aliases = $test->invokeArgs( self::$syncer, array( 'default' ) );
+		$aliases = $test->invokeArgs( self::$syncer, [ 'default' ] );
 
 		$this->assertEquals( $expected, $aliases );
 	}
@@ -71,7 +71,7 @@ final class UniFiClientAliasAliasesTest extends UniFiClientAliasTestBase {
 
 		$test = self::get_method( 'get_client_aliases_for_site' );
 
-		$aliases = $test->invokeArgs( self::$syncer, array( 'cd90qe2s' ) );
+		$aliases = $test->invokeArgs( self::$syncer, [ 'cd90qe2s' ] );
 
 		$this->assertEquals( $expected, $aliases );
 	}
@@ -86,7 +86,7 @@ final class UniFiClientAliasAliasesTest extends UniFiClientAliasTestBase {
 
 		$test = self::get_method( 'get_client_aliases_for_site' );
 
-		$aliases = $test->invokeArgs( self::$syncer, array( 'default' ) );
+		$aliases = $test->invokeArgs( self::$syncer, [ 'default' ] );
 
 		$this->assertEquals( $expected, $aliases );
 	}

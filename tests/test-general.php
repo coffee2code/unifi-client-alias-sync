@@ -32,7 +32,7 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 
 		$this->expectOutputString( $message . "\n" );
 
-		$test->invokeArgs( self::$syncer, array( $message ) );
+		$test->invokeArgs( self::$syncer, [ $message ] );
 	}
 
 	public function test_disabled_status() {
@@ -43,7 +43,7 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 
 		$this->expectOutputString( '' );
 
-		$test->invokeArgs( self::$syncer, array( $message ) );
+		$test->invokeArgs( self::$syncer, [ $message ] );
 	}
 
 	public function test_bail() {
@@ -55,7 +55,7 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 		$this->expectExceptionMessage( $message );
 		$this->expectOutputString( $message . "\n" );
 
-		$clients = $test->invokeArgs( self::$syncer, array( $message ) );
+		$clients = $test->invokeArgs( self::$syncer, [ $message ] );
 	}
 
 	public function test_bail_when_output_disabled() {
@@ -69,7 +69,7 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 		$this->expectExceptionMessage( $message );
 		$this->expectOutputRegex( '/^$/' );
 
-		$clients = $test->invokeArgs( self::$syncer, array( $message ) );
+		$clients = $test->invokeArgs( self::$syncer, [ $message ] );
 
 		$this->set_config( 'UNIFI_ALIAS_SYNC_DISABLE_STATUS', false );
 	}
