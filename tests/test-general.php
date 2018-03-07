@@ -30,12 +30,9 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 		$message = "This is a message.";
 		$test = self::get_method( 'status' );
 
-		ob_start();
-		$test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( $message ) );
-		$status = ob_get_contents();
-		ob_end_clean();
+		$this->expectOutputString( $message . "\n" );
 
-		$this->assertEquals( $message . "\n", $status );
+		$test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( $message ) );
 	}
 
 	public function test_disabled_status() {
@@ -44,12 +41,9 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 		$message = "This is a message.";
 		$test = self::get_method( 'status' );
 
-		ob_start();
-		$test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( $message ) );
-		$status = ob_get_contents();
-		ob_end_flush();
+		$this->expectOutputString( '' );
 
-		$this->assertEmpty( $status );
+		$test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( $message ) );
 	}
 
 	public function test_bail() {
