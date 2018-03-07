@@ -102,7 +102,7 @@ class UniFiClientAliasTestBase extends TestCase {
 			$clients = self::$clients = [
 				'cd90qe2s' => [
 					(object) [
-						// Intentionally unaliased
+						// Intentionally unaliased and not found on another site
 						'mac'  => 'b3:ae:91:cd:3d:c1',
 					],
 					(object) [
@@ -118,27 +118,32 @@ class UniFiClientAliasTestBase extends TestCase {
 				],
 				'default' => [
 					(object) [
+						// Unaliased client that should get alias from lower priority site
 						'mac'  => '9e:cc:a1:2f:0b:aa',
 					],
 					(object) [
+						// Aliased client that has a different alias on a lower priority site
 						'mac'  => '90:04:e3:51:9d:a1',
 						'name' => "Adam's iPhone 8",
 					],
 					(object) [
+						// Aliased client that has the same alias on a lower priority site
 						'mac'  => '35:19:29:f5:4b:1e',
 						'name' => "Brenda's Note 8",
 					],
 					(object) [
+						// Aliased client that should not be present elsewhere
 						'mac'  => 'e4:d9:c7:cc:46:3b',
 						'name' => "HP Inkjet Printer",
 					],
 				],
 				'9lirxq5p' => [
 					(object) [
+						// Intentionally unaliased and not found on another site
 						'mac'  => '33:4a:a0:5c:52:15',
 					],
 					(object) [
-						// Intentionally unaliased instance of aliased client of 'default'
+						// Intentionally unaliased and not found on another site
 						'mac'  => 'e4:d9:c7:cc:46:3b',
 					],
 					(object) [
@@ -155,9 +160,11 @@ class UniFiClientAliasTestBase extends TestCase {
 				// Site with multiple unaliased clients
 				'a98ey4l5' => [
 					(object) [
+						// Only appearance of this client
 						'mac'  => 'f2:ab:4e:e2:fa:fa',
 					],
 					(object) [
+						// Only appearance of this client
 						'mac'  => 'd5:67:1a:f8:7e:0a',
 					],
 				],
@@ -248,4 +255,5 @@ class UniFiClientAliasTestBase extends TestCase {
 
 		return true;
 	}
+
 }
