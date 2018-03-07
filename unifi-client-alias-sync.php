@@ -453,7 +453,7 @@ class Syncer {
 				count( $aliased_clients )
 			) );
 			foreach ( $aliased_clients as $ac ) {
-				$this->status( "\t\t'{$ac->mac}' => '{$ac->name}'" );
+				$this->status( "\t\t\"{$ac->mac}\" => \"{$ac->name}\"" );
 			}
 		}
 
