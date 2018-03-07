@@ -178,7 +178,9 @@ class Syncer {
 	protected function init() {
 		$this->verify_environment();
 
-		require self::CONFIG_FILE;
+		if ( ! $this->get_config( 'UNIFI_ALIAS_SYNC_TESTING' ) ) {
+			require self::CONFIG_FILE;
+		}
 
 		$this->verify_config();
 
@@ -229,10 +231,12 @@ class Syncer {
 	 * @access protected
 	 */
 	protected function verify_environment() {
-		if ( ! file_exists( self::CONFIG_FILE ) ) {
+		// Bail if the config file doesn't exist (unless unit testing).
+		if ( ! $this->get_config( 'UNIFI_ALIAS_SYNC_TESTING' ) && ! file_exists( self::CONFIG_FILE ) ) {
 			$this->bail( "Error: Unable to locate config file: {self::CONFIG_FILE}\nCopy config-sample.php to that filename and customize." );
 		}
 
+		// Bail if 'allow_url_fopen' is not enabled.
 		if ( ! ini_get( 'allow_url_fopen' ) ) {
 			$this->bail( "Error: The PHP directive 'allow_url_fopen' is not enabled on this system." );
 		}
