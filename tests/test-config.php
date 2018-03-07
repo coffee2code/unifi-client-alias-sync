@@ -89,7 +89,7 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 		$test = self::get_method( 'verify_config' );
 
 		foreach ( [ null, '' ] as $val ) {
-			self::$syncer->set_config( $setting, $val );
+			$this->set_config( $setting, $val );
 
 			$this->expectException( Exception::class );
 			$this->expectExceptionMessage( self::$exception_message );
@@ -105,7 +105,7 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 	public function test_optional_settings_get_default_values( $setting, $default ) {
 		$test = self::get_method( 'verify_config' );
 
-		self::$syncer->set_config( $setting, null );
+		$this->set_config( $setting, null );
 
 		$this->expectOutputString( '' );
 
@@ -118,7 +118,7 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 	 * @dataProvider values_for_controller
 	 */
 	public function test_controller_syntax( $url, $message ) {
-		self::$syncer->set_config( 'UNIFI_ALIAS_SYNC_CONTROLLER', $url );
+		$this->set_config( 'UNIFI_ALIAS_SYNC_CONTROLLER', $url );
 
 		$test = self::get_method( 'verify_config' );
 
@@ -135,7 +135,7 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 		$message = "Error: Invalid format for UNIFI_ALIAS_SYNC_PRIORITIZED_SITES (must be array): %s\n" . self::$exception_message . "\n";
 
 		foreach ( [ '', true, false, 0, 1 ] as $value ) {
-			self::$syncer->set_config( 'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES', $value );
+			$this->set_config( 'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES', $value );
 
 			$test = self::get_method( 'verify_config' );
 
@@ -151,7 +151,7 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 		$message = "Error: Invalid format for UNIFI_ALIAS_SYNC_ALIASES: %s\n" . self::$exception_message . "\n";
 
 		foreach ( [ '', true, false, 0, 1 ] as $value ) {
-			self::$syncer->set_config( 'UNIFI_ALIAS_SYNC_ALIASES', $value );
+			$this->set_config( 'UNIFI_ALIAS_SYNC_ALIASES', $value );
 
 			$test = self::get_method( 'verify_config' );
 

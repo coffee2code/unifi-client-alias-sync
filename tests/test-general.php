@@ -19,7 +19,7 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 	}
 
 	public function test_is_debug_when_setting_is_true() {
-		self::$syncer->set_config( 'UNIFI_ALIAS_SYNC_DEBUG' , true );
+		$this->set_config( 'UNIFI_ALIAS_SYNC_DEBUG' , true );
 
 		$foo = self::get_method( 'is_debug' );
 		$resp = $foo->invoke( self::$syncer );
@@ -36,7 +36,7 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 	}
 
 	public function test_disabled_status() {
-		self::$syncer->set_config( 'UNIFI_ALIAS_SYNC_DISABLE_STATUS', true );
+		$this->set_config( 'UNIFI_ALIAS_SYNC_DISABLE_STATUS', true );
 
 		$message = "This is a message.";
 		$test = self::get_method( 'status' );
