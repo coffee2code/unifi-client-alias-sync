@@ -34,18 +34,18 @@ class Syncer {
 	 *
 	 * @var array
 	 */
-	const REQUIRED_CONFIG = array(
+	const REQUIRED_CONFIG = [
 		'UNIFI_ALIAS_SYNC_CONTROLLER'        => 'URL of the UniFi controller, including full protocol and port number.',
 		'UNIFI_ALIAS_SYNC_USER'              => 'Username of admin user.',
 		'UNIFI_ALIAS_SYNC_PASSWORD'          => 'Password for admin user.',
-	);
+	];
 
 	/**
 	 * Optional configuration options and their default values.
 	 *
 	 * @var array
 	 */
-	const OPTIONAL_CONFIG = array(
+	const OPTIONAL_CONFIG = [
 		'UNIFI_ALIAS_SYNC_VERIFY_SSL'        => true,
 		'UNIFI_ALIAS_SYNC_DRY_RUN'           => true,
 		'UNIFI_ALIAS_SYNC_DEBUG'             => false,
@@ -54,7 +54,7 @@ class Syncer {
 		'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' => [],
 		// Not for general use.
 		'UNIFI_ALIAS_SYNC_TESTING'           => false,
-	);
+	];
 
 
 	/**
