@@ -89,13 +89,13 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 		$test = self::get_method( 'verify_config' );
 
 		foreach ( [ null, '' ] as $val ) {
-			UniFi_Client_Alias_Sync\TestSyncer::get_instance()->set_config( $setting, $val );
+			self::$syncer->set_config( $setting, $val );
 
 			$this->expectException( Exception::class );
 			$this->expectExceptionMessage( self::$exception_message );
 			$this->expectOutputString( sprintf( $error, $setting, $description ) );
 
-			$test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+			$test->invoke( self::$syncer );
 		}
 	}
 
@@ -105,20 +105,20 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 	public function test_optional_settings_get_default_values( $setting, $default ) {
 		$test = self::get_method( 'verify_config' );
 
-		UniFi_Client_Alias_Sync\TestSyncer::get_instance()->set_config( $setting, null );
+		self::$syncer->set_config( $setting, null );
 
 		$this->expectOutputString( '' );
 
-		$test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+		$test->invoke( self::$syncer );
 
-		$this->assertEquals( $default, UniFi_Client_Alias_Sync\TestSyncer::get_instance()->get_config( $setting ) );
+		$this->assertEquals( $default, self::$syncer->get_config( $setting ) );
 	}
 
 	/**
 	 * @dataProvider values_for_controller
 	 */
 	public function test_controller_syntax( $url, $message ) {
-		UniFi_Client_Alias_Sync\TestSyncer::get_instance()->set_config( 'UNIFI_ALIAS_SYNC_CONTROLLER', $url );
+		self::$syncer->set_config( 'UNIFI_ALIAS_SYNC_CONTROLLER', $url );
 
 		$test = self::get_method( 'verify_config' );
 
@@ -128,14 +128,14 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 		}
 		$this->expectOutputString( $message );
 
-		$test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+		$test->invoke( self::$syncer );
 	}
 
 	public function test_prioritized_sites_must_be_array() {
 		$message = "Error: Invalid format for UNIFI_ALIAS_SYNC_PRIORITIZED_SITES (must be array): %s\n" . self::$exception_message . "\n";
 
 		foreach ( [ '', true, false, 0, 1 ] as $value ) {
-			UniFi_Client_Alias_Sync\TestSyncer::get_instance()->set_config( 'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES', $value );
+			self::$syncer->set_config( 'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES', $value );
 
 			$test = self::get_method( 'verify_config' );
 
@@ -143,7 +143,7 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 			$this->expectExceptionMessage( self::$exception_message );
 			$this->expectOutputString( sprintf( $message, $value ) );
 
-			$test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+			$test->invoke( self::$syncer );
 		}
 	}
 
@@ -151,7 +151,7 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 		$message = "Error: Invalid format for UNIFI_ALIAS_SYNC_ALIASES: %s\n" . self::$exception_message . "\n";
 
 		foreach ( [ '', true, false, 0, 1 ] as $value ) {
-			UniFi_Client_Alias_Sync\TestSyncer::get_instance()->set_config( 'UNIFI_ALIAS_SYNC_ALIASES', $value );
+			self::$syncer->set_config( 'UNIFI_ALIAS_SYNC_ALIASES', $value );
 
 			$test = self::get_method( 'verify_config' );
 
@@ -159,7 +159,7 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 			$this->expectExceptionMessage( self::$exception_message );
 			$this->expectOutputString( sprintf( $message, $value ) );
 
-			$test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+			$test->invoke( self::$syncer );
 		}
 	}
 

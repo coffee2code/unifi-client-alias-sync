@@ -14,15 +14,15 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 
 	public function test_is_debug_false_by_default() {
 		$foo = self::get_method( 'is_debug' );
-		$resp = $foo->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+		$resp = $foo->invoke( self::$syncer );
 		$this->assertFalse( $resp );
 	}
 
 	public function test_is_debug_when_setting_is_true() {
-		UniFi_Client_Alias_Sync\TestSyncer::get_instance()->set_config( 'UNIFI_ALIAS_SYNC_DEBUG' , true );
+		self::$syncer->set_config( 'UNIFI_ALIAS_SYNC_DEBUG' , true );
 
 		$foo = self::get_method( 'is_debug' );
-		$resp = $foo->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+		$resp = $foo->invoke( self::$syncer );
 		$this->assertTrue( $resp );
 	}
 
@@ -32,18 +32,18 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 
 		$this->expectOutputString( $message . "\n" );
 
-		$test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( $message ) );
+		$test->invokeArgs( self::$syncer, array( $message ) );
 	}
 
 	public function test_disabled_status() {
-		UniFi_Client_Alias_Sync\TestSyncer::get_instance()->set_config( 'UNIFI_ALIAS_SYNC_DISABLE_STATUS', true );
+		self::$syncer->set_config( 'UNIFI_ALIAS_SYNC_DISABLE_STATUS', true );
 
 		$message = "This is a message.";
 		$test = self::get_method( 'status' );
 
 		$this->expectOutputString( '' );
 
-		$test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( $message ) );
+		$test->invokeArgs( self::$syncer, array( $message ) );
 	}
 
 	public function test_bail() {
@@ -55,7 +55,7 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 		$this->expectExceptionMessage( $message );
 		$this->expectOutputString( $message . "\n" );
 
-		$clients = $test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( $message ) );
+		$clients = $test->invokeArgs( self::$syncer, array( $message ) );
 	}
 
 	public function test_bail_when_output_disabled() {
@@ -69,7 +69,7 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 		$this->expectExceptionMessage( $message );
 		$this->expectOutputRegex( '/^$/' );
 
-		$clients = $test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( $message ) );
+		$clients = $test->invokeArgs( self::$syncer, array( $message ) );
 
 		$this->set_config( 'UNIFI_ALIAS_SYNC_DISABLE_STATUS', false );
 	}

@@ -21,7 +21,7 @@ final class UniFiClientAliasClientsTest extends UniFiClientAliasTestBase {
 	public function test_get_clients_for_invalid_site() {
 		$test = self::get_method( 'get_clients' );
 
-		$clients = $test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( 'invalid' ) );
+		$clients = $test->invokeArgs( self::$syncer, array( 'invalid' ) );
 
 		$this->assertEmpty( $clients );
 	}
@@ -31,7 +31,7 @@ final class UniFiClientAliasClientsTest extends UniFiClientAliasTestBase {
 
 		$test = self::get_method( 'get_clients' );
 
-		$clients = $test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( '1qwe314gn' ) );
+		$clients = $test->invokeArgs( self::$syncer, array( '1qwe314gn' ) );
 
 		$this->assertEmpty( $clients );
 	}
@@ -42,7 +42,7 @@ final class UniFiClientAliasClientsTest extends UniFiClientAliasTestBase {
 		$test = self::get_method( 'get_clients' );
 
 		foreach ( array_keys( $_clients ) as $site ) {
-			$clients = $test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( $site ) );
+			$clients = $test->invokeArgs( self::$syncer, array( $site ) );
 
 			$this->assertEquals( $_clients[ $site ], $clients );
 		}
@@ -54,7 +54,7 @@ final class UniFiClientAliasClientsTest extends UniFiClientAliasTestBase {
 
 		$test = self::get_method( 'get_aliased_clients' );
 
-		$clients = $test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+		$clients = $test->invoke( self::$syncer );
 
 		$this->assertEmpty( $clients );
 	}
@@ -80,7 +80,7 @@ TEXT;
 
 		$this->expectOutputString( $string );
 
-		$clients = $test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+		$clients = $test->invoke( self::$syncer );
 
 		$this->assertEquals( 3, count( $clients ) );
 		$this->assertContains( 'a98ey4l5', array_diff( array_keys( self::$clients ), array_keys( $clients ) ) );

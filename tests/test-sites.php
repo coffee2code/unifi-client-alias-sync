@@ -36,7 +36,7 @@ final class UniFiClientAliasSitesTest extends UniFiClientAliasTestBase {
 
 		$test = self::get_method( 'get_sites' );
 
-		$sites = $test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+		$sites = $test->invoke( self::$syncer );
 
 		$this->assertEmpty( $sites );
 	}
@@ -46,7 +46,7 @@ final class UniFiClientAliasSitesTest extends UniFiClientAliasTestBase {
 
 		$test = self::get_method( 'get_sites' );
 
-		$sites = $test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+		$sites = $test->invoke( self::$syncer );
 
 		$_sites = $this->sort_sites( $_sites );
 
@@ -57,7 +57,7 @@ final class UniFiClientAliasSitesTest extends UniFiClientAliasTestBase {
 	public function test_prioritize_sites_puts_default_first() {
 		$test = self::get_method( 'prioritize_sites' );
 
-		$sites = $test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), [ self::$sites ] );
+		$sites = $test->invokeArgs( self::$syncer, [ self::$sites ] );
 		reset( $sites );
 
 		$this->assertEquals( 'default', key( $sites ) );
@@ -70,7 +70,7 @@ final class UniFiClientAliasSitesTest extends UniFiClientAliasTestBase {
 
 		$test = self::get_method( 'prioritize_sites' );
 
-		$sites = $test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), [ $_sites ] );
+		$sites = $test->invokeArgs( self::$syncer, [ $_sites ] );
 		reset( $sites );
 
 		$this->assertEquals( '9lirxq5p', key( $sites ) );
@@ -91,7 +91,7 @@ final class UniFiClientAliasSitesTest extends UniFiClientAliasTestBase {
 
 		$test = self::get_method( 'prioritize_sites' );
 
-		$sites = $test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), [ $_sites ] );
+		$sites = $test->invokeArgs( self::$syncer, [ $_sites ] );
 		reset( $sites );
 
 		$this->assertEquals( '1qwe314gn', key( $sites ) );

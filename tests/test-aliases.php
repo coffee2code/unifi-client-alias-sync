@@ -26,7 +26,7 @@ final class UniFiClientAliasAliasesTest extends UniFiClientAliasTestBase {
 	public function test_get_client_aliases_for_site_for_invalid_site() {
 		$test = self::get_method( 'get_client_aliases_for_site' );
 
-		$aliases = $test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( 'invalid' ) );
+		$aliases = $test->invokeArgs( self::$syncer, array( 'invalid' ) );
 
 		$this->assertEmpty( $aliases );
 	}
@@ -41,7 +41,7 @@ final class UniFiClientAliasAliasesTest extends UniFiClientAliasTestBase {
 
 		$test = self::get_method( 'get_client_aliases_for_site' );
 
-		$aliases = $test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( 'cd90qe2s' ) );
+		$aliases = $test->invokeArgs( self::$syncer, array( 'cd90qe2s' ) );
 
 		$this->assertEquals( $expected, $aliases );
 	}
@@ -54,7 +54,7 @@ final class UniFiClientAliasAliasesTest extends UniFiClientAliasTestBase {
 
 		$test = self::get_method( 'get_client_aliases_for_site' );
 
-		$aliases = $test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( 'default' ) );
+		$aliases = $test->invokeArgs( self::$syncer, array( 'default' ) );
 
 		$this->assertEquals( $expected, $aliases );
 	}
@@ -71,7 +71,7 @@ final class UniFiClientAliasAliasesTest extends UniFiClientAliasTestBase {
 
 		$test = self::get_method( 'get_client_aliases_for_site' );
 
-		$aliases = $test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( 'cd90qe2s' ) );
+		$aliases = $test->invokeArgs( self::$syncer, array( 'cd90qe2s' ) );
 
 		$this->assertEquals( $expected, $aliases );
 	}
@@ -86,7 +86,7 @@ final class UniFiClientAliasAliasesTest extends UniFiClientAliasTestBase {
 
 		$test = self::get_method( 'get_client_aliases_for_site' );
 
-		$aliases = $test->invokeArgs( UniFi_Client_Alias_Sync\TestSyncer::get_instance(), array( 'default' ) );
+		$aliases = $test->invokeArgs( self::$syncer, array( 'default' ) );
 
 		$this->assertEquals( $expected, $aliases );
 	}
@@ -95,7 +95,7 @@ final class UniFiClientAliasAliasesTest extends UniFiClientAliasTestBase {
 		// Get client aliases early just so it'll already be memoized and thus not
 		// appear in output.
 		$test = self::get_method( 'get_aliased_clients' );
-		$test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+		$test->invoke( self::$syncer );
 
 		$expected = <<<TEXT
 About to assign client aliases to site default...
@@ -121,7 +121,7 @@ TEXT;
 
 		$this->expectOutputString( $expected );
 
-		$aliases = $test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+		$aliases = $test->invoke( self::$syncer );
 	}
 
 	public function test_sync_aliases_with_overwrites_allowed() {
@@ -130,7 +130,7 @@ TEXT;
 		// Get client aliases early just so it'll already be memoized and thus not
 		// appear in output.
 		$test = self::get_method( 'get_aliased_clients' );
-		$test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+		$test->invoke( self::$syncer );
 
 		$expected = <<<TEXT
 About to assign client aliases to site default...
@@ -156,7 +156,7 @@ TEXT;
 
 		$this->expectOutputString( $expected );
 
-		$aliases = $test->invoke( UniFi_Client_Alias_Sync\TestSyncer::get_instance() );
+		$aliases = $test->invoke( self::$syncer );
 	}
 
 }

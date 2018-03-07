@@ -34,6 +34,13 @@ class UniFiClientAliasTestBase extends TestCase {
 	];
 
 	/**
+	 * Instance of the TestSync object.
+	 *
+	 * @var TestSyncer
+	 */
+	protected static $syncer;
+
+	/**
 	 * Mock sites.
 	 *
 	 * @access protected
@@ -57,6 +64,8 @@ class UniFiClientAliasTestBase extends TestCase {
 		$this->set_static_var( 'sites', null );
 		$this->set_static_var( 'clients', null );
 		$this->set_static_var( 'client_aliases', null );
+
+		self::$syncer = UniFi_Client_Alias_Sync\TestSyncer::get_instance();
 
 		// Reset settings to default values.
 		self::reset_config();
@@ -209,7 +218,7 @@ class UniFiClientAliasTestBase extends TestCase {
 	}
 
 	protected static function set_config( $setting, $value ) {
-		UniFi_Client_Alias_Sync\TestSyncer::get_instance()->set_config( $setting, $value );
+		self::$syncer->set_config( $setting, $value );
 	}
 
 	/**
