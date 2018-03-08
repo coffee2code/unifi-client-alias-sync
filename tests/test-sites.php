@@ -108,4 +108,46 @@ final class UniFiClientAliasSitesTest extends UniFiClientAliasTestBase {
 		$this->assertTrue( $this->arrays_are_ordered( $_sites, $sites ) );
 	}
 
+	public function test_exclude_sites_for_known_site() {
+		$this->set_config( 'UNIFI_ALIAS_SYNC_EXCLUDE_SITES', [ 'default' ] );
+
+		$test = self::get_method( 'get_sites' );
+
+		$sites = $test->invoke( self::$syncer );
+
+		$this->assertFalse( array_key_exists( 'default', $sites ) );
+		$this->assertEquals( 4, count( $sites ) );
+	}
+
+	public function test_exclude_multiple_sites() {
+		$_sites = self::$sites;
+
+		$this->set_config( 'UNIFI_ALIAS_SYNC_EXCLUDE_SITES', [ '1qwe314gn', 'cd90qe2s' ] );
+
+		$test = self::get_method( 'get_sites' );
+
+		$sites = $test->invoke( self::$syncer );
+
+		$this->assertFalse( array_key_exists( '1qwe314gn', $sites ) );
+		$this->assertFalse( array_key_exists( 'cd90qe2s', $sites ) );
+		$this->assertEquals( 3, count( $sites ) );
+
+		// Get full ordered array.
+		unset( $_sites[ '1qwe314gn' ] );
+		unset( $_sites[ 'cd90qe2s' ] );
+		$_sites = $this->sort_sites( $_sites );
+
+		$this->assertTrue( $this->arrays_are_ordered( $_sites, $sites ) );
+	}
+
+	public function test_exclude_sites_for_unknown_site() {
+		$this->set_config( 'UNIFI_ALIAS_SYNC_EXCLUDE_SITES', [ 'unknown' ] );
+
+		$test = self::get_method( 'get_sites' );
+
+		$sites = $test->invoke( self::$syncer );
+
+		$this->assertEquals( 5, count( $sites ) );
+	}
+
 }

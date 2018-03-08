@@ -87,4 +87,16 @@ TEXT;
 		$this->assertContains( '1qwe314gn', array_diff( array_keys( self::$clients ), array_keys( $clients ) ) );
 	}
 
+	public function test_excluded_site_does_not_have_clients() {
+		$this->set_config( 'UNIFI_ALIAS_SYNC_EXCLUDE_SITES', [ 'default' ] );
+
+		$this->expectOutputRegex( '//' );
+
+		$test = self::get_method( 'get_aliased_clients' );
+
+		$clients = $test->invoke( self::$syncer );
+
+		$this->assertFalse( array_key_exists( 'default', $clients ) );
+	}
+
 }

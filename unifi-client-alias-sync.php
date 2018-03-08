@@ -51,6 +51,7 @@ class Syncer {
 		'UNIFI_ALIAS_SYNC_DEBUG'             => false,
 		'UNIFI_ALIAS_SYNC_ALIASES'           => [],
 		'UNIFI_ALIAS_SYNC_ALLOW_OVERWRITES'  => false,
+		'UNIFI_ALIAS_SYNC_EXCLUDE_SITES'     => [],
 		'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' => [],
 		// Not for general use.
 		'UNIFI_ALIAS_SYNC_TESTING'           => false,
@@ -304,11 +305,14 @@ class Syncer {
 			$bail = true;
 		}
 
-		// Check that UNIFI_ALIAS_SYNC_PRIORITIZED_SITES, if present, is an array.
-		$prioritized_sites = $this->get_config( 'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' );
-		if ( ! is_null( $prioritized_sites ) && ! is_array( $prioritized_sites ) ) {
-			$this->status( "Error: Invalid format for UNIFI_ALIAS_SYNC_PRIORITIZED_SITES (must be array): {$prioritized_sites}" );
-			$bail = true;
+		// Check that array settings, if present, are arrays.
+		$arrays = [ 'UNIFI_ALIAS_SYNC_EXCLUDE_SITES', 'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' ];
+		foreach ( $arrays as $array ) {
+			$value = $this->get_config( $array );
+			if ( ! is_null( $value ) && ! is_array( $value ) ) {
+				$this->status( "Error: Invalid format for {$array} (must be array): {$value}" );
+				$bail = true;
+			}
 		}
 
 		// Truly bail if an error was encountered.
@@ -348,6 +352,14 @@ class Syncer {
 			}
 
 			self::$sites = $sites;
+		}
+
+		// Exclude any excluded sites.
+		$excluded_sites = $this->get_config( 'UNIFI_ALIAS_SYNC_EXCLUDE_SITES' );
+		if ( $excluded_sites ) {
+			foreach ( $excluded_sites as $site ) {
+				unset( $sites[ $site ] );
+			}
 		}
 
 		return $this->prioritize_sites( $sites );
@@ -539,6 +551,14 @@ class Syncer {
 	protected function sync_aliases() {
 		// Get sites.
 		$sites = $this->get_sites();
+
+		// Report on excluded sites.
+		$excluded_sites = $this->get_config( 'UNIFI_ALIAS_SYNC_EXCLUDE_SITES' );
+		if ( $excluded_sites ) {
+			foreach ( $excluded_sites as $site ) {
+				$this->status( "Excluding site {$site}" );
+			}
+		}
 
 		// Iterate through all sites.
 		foreach ( $sites as $site ) {

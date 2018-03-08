@@ -159,4 +159,45 @@ TEXT;
 		$aliases = $test->invoke( self::$syncer );
 	}
 
+	public function test_excluded_sites_do_not_contribute_client_aliases() {
+		$this->set_config( 'UNIFI_ALIAS_SYNC_EXCLUDE_SITES', [ '9lirxq5p' ] );
+
+		// Get client aliases early just so it'll already be memoized and thus not
+		// appear in output.
+		$test = self::get_method( 'get_aliased_clients' );
+		$test->invoke( self::$syncer );
+
+		$expected = <<<TEXT
+Excluding site 9lirxq5p
+About to assign client aliases to site default...
+	No clients assigned an alias.
+About to assign client aliases to site 1qwe314gn...
+	No clients assigned an alias.
+About to assign client aliases to site a98ey4l5...
+	No clients assigned an alias.
+About to assign client aliases to site cd90qe2s...
+	Client 35:19:29:f5:4b:1e already has the alias "Brenda's Note 8".
+	No clients assigned an alias.
+
+TEXT;
+
+		$this->set_config( 'UNIFI_ALIAS_SYNC_DISABLE_STATUS', false );
+
+		$test = self::get_method( 'sync_aliases' );
+
+		$this->expectOutputString( $expected );
+
+		$aliases = $test->invoke( self::$syncer );
+	}
+
+	public function test_excluded_site_does_not_have_aliases() {
+		$this->set_config( 'UNIFI_ALIAS_SYNC_EXCLUDE_SITES', [ 'default' ] );
+
+		$test = self::get_method( 'get_client_aliases_for_site' );
+
+		$aliases = $test->invokeArgs( self::$syncer, [ 'default' ] );
+
+		$this->assertEmpty( $aliases );
+	}
+
 }
