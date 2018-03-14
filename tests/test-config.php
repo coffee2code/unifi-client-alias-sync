@@ -138,7 +138,7 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 
 		if ( $message ) {
 			$this->expectException( Exception::class );
-			$this->expectExceptionMessage( 'Terminating script for invalid config file.' );
+			$this->expectExceptionMessage( self::$exception_message );
 		}
 		$this->expectOutputString( $message );
 
