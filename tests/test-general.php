@@ -12,6 +12,21 @@ use PHPUnit\Framework\TestCase;
 
 final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 
+	//
+	//
+	// DATA PROVIDERS
+	//
+	//
+
+
+	public static function values_for_get_controller_url() {
+		return [
+			[ 'https://example.com:8443',  'https://example.com:8443' ],
+			[ 'https://example.com:8443/', 'https://example.com:8443' ],
+		];
+	}
+
+
 	public function test_is_debug_false_by_default() {
 		$foo = self::get_method( 'is_debug' );
 		$resp = $foo->invoke( self::$syncer );
@@ -72,6 +87,19 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 		$clients = $test->invokeArgs( self::$syncer, [ $message ] );
 
 		$this->set_config( 'UNIFI_ALIAS_SYNC_DISABLE_STATUS', false );
+	}
+
+	/**
+	 * @dataProvider values_for_get_controller_url
+	 */
+	public function test_get_controller_url( $url, $expected ) {
+		$test = self::get_method( 'get_controller_url' );
+
+		$this->set_config( 'UNIFI_ALIAS_SYNC_CONTROLLER', $url );
+
+		$controller_url = $test->invoke( self::$syncer );
+
+		$this->assertEquals( $expected, $controller_url );
 	}
 
 }

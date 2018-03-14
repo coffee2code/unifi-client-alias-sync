@@ -193,7 +193,7 @@ class Syncer {
 		}
 
 		// Check for controller URL.
-		$controller_url = rtrim( $this->get_config( 'UNIFI_ALIAS_SYNC_CONTROLLER' ), '/' );
+		$controller_url = $this->get_controller_url();
 
 		if ( ! $this->get_config( 'UNIFI_ALIAS_SYNC_TESTING' ) ) {
 			self::$unifi_connection = new \UniFi_API\Client(
@@ -211,6 +211,17 @@ class Syncer {
 
 			self::$unifi_connection->login();
 		}
+	}
+
+	/**
+	 * Returns the fully qualified URL for the UniFi controller.
+	 *
+	 * @access protected
+	 *
+	 * @return string
+	 */
+	protected function get_controller_url() {
+		return rtrim( $this->get_config( 'UNIFI_ALIAS_SYNC_CONTROLLER' ), '/' );
 	}
 
 	/**
