@@ -46,6 +46,7 @@ class Syncer {
 	 * @var array
 	 */
 	const OPTIONAL_CONFIG = [
+		'UNIFI_ALIAS_SYNC_PORT'              => 8443,
 		'UNIFI_ALIAS_SYNC_VERIFY_SSL'        => true,
 		'UNIFI_ALIAS_SYNC_DRY_RUN'           => true,
 		'UNIFI_ALIAS_SYNC_DEBUG'             => false,
@@ -221,7 +222,18 @@ class Syncer {
 	 * @return string
 	 */
 	protected function get_controller_url() {
-		return rtrim( $this->get_config( 'UNIFI_ALIAS_SYNC_CONTROLLER' ), '/' );
+		$controller = rtrim( $this->get_config( 'UNIFI_ALIAS_SYNC_CONTROLLER' ), '/' );
+
+		// If controller URL includes port number, that takes precedence over
+		// UNIFI_ALIAS_SYNC_PORT.
+		if ( preg_match( '~(.+):([0-9]+)$~', $controller, $matches ) ) {
+			$controller = $matches[1];
+			$port = $matches[2];
+		} else {
+			$port = $this->get_config( 'UNIFI_ALIAS_SYNC_PORT' );
+		}
+
+		return $controller . ':' . $port;
 	}
 
 	/**
@@ -286,10 +298,6 @@ class Syncer {
 				$this->status( "Error: The URL defined in UNIFI_ALIAS_SYNC_CONTROLLER does not include the protocol 'https://'." );
 				$bail = true;
 			}
-			if ( ! preg_match( '~:[0-9]+/?$~', $controller ) ) {
-				$this->status( "Error: The URL defined in UNIFI_ALIAS_SYNC_CONTROLLER does not include the port number. This is usually 8443 or 443." );
-				$bail = true;
-			}
 		}
 
 		// Check that aliases are defined properly.
@@ -307,6 +315,13 @@ class Syncer {
 					}
 				}
 			}
+		}
+
+		// Check that UNIFI_ALIAS_SYNC_PORT, if present, is a non-zero integer.
+		$port = $this->get_config( 'UNIFI_ALIAS_SYNC_PORT' );
+		if ( ! is_null( $port ) && ( ! is_numeric( $port ) || ! $port ) ) {
+			$this->status( "Error: Invalid format for UNIFI_ALIAS_SYNC_PORT (must be integer): {$port}" );
+			$bail = true;
 		}
 
 		// Check that UNIFI_ALIAS_SYNC_ALLOW_OVERWRITES, if present, is a boolean.

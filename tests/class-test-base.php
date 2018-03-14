@@ -20,7 +20,8 @@ class UniFiClientAliasTestBase extends TestCase {
 	 * @access protected
 	 */
 	protected static $default_config = [
-		'UNIFI_ALIAS_SYNC_CONTROLLER'        => 'https://example.com:8443',
+		'UNIFI_ALIAS_SYNC_CONTROLLER'        => 'https://example.com',
+		'UNIFI_ALIAS_SYNC_PORT'              => 8443,
 		'UNIFI_ALIAS_SYNC_USER'              => 'adminuser',
 		'UNIFI_ALIAS_SYNC_PASSWORD'          => 'adminpassword',
 		'UNIFI_ALIAS_SYNC_VERIFY_SSL'        => false,

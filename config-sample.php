@@ -15,12 +15,25 @@
 /**
  * Fully qualified URL for the controller.
  *
- * Must include protocol ("https://") and port number (":8443" or ":443").
- * Example: https://example.com:8443
+ * Must include protocol ("https://"). Port number should be specified via
+ * UNIFI_ALIAS_SYNC_PORT. If specified here, then UNIFI_ALIAS_SYNC_PORT is
+ * ignored.
+ *
+ * Example: https://example.com
  *
  * @var string
  */
 define( 'UNIFI_ALIAS_SYNC_CONTROLLER', '' );
+
+/**
+ * The port number for the controller.
+ *
+ * Typically 8443 or 443. If a port number is included as part of
+ * UNIFI_ALIAS_SYNC_CONTROLLER then this value is ignored.
+ *
+ * @var int
+ */
+define( 'UNIFI_ALIAS_SYNC_PORT', 8443 );
 
 
 /**

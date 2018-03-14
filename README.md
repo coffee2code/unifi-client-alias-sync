@@ -28,10 +28,11 @@ A few things to note:
 2. Copy the `config-sample.php` file to `config.php` and customize the constants.
    - Refer to the file as it contains full documentation of all the constants.
    - Three constants are required:
-     - `UNIFI_ALIAS_SYNC_CONTROLLER`: the fully qualified URL of the controller with protocol and port number (e.g. https://example.com:8443)
+     - `UNIFI_ALIAS_SYNC_CONTROLLER`: the fully qualified URL of the controller with protocol (e.g. https://example.com)
      - `UNIFI_ALIAS_SYNC_USER`: the admin username for the controller
      - `UNIFI_ALIAS_SYNC_PASSWORD`: the password for the admin user
-   - Seven constants are optional:
+   - Eight constants are optional:
+     - `UNIFI_ALIAS_SYNC_PORT`: port number for the controller (default is 8443)
      - `UNIFI_ALIAS_SYNC_DRY_RUN`: should the script operate in a dry run mode, which doesn't actually change any data?
      - `UNIFI_ALIAS_SYNC_DEBUG`: should the script operate in debug mode, which provides more verbose output about what is happening and what may have gone wrong?
      - `UNIFI_ALIAS_SYNC_ALLOW_OVERWRITES`: should the script be allowed to overwrite a client alias with a different alias from a higher priority site?

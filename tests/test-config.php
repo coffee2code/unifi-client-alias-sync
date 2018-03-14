@@ -45,21 +45,18 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 	public static function values_for_controller() {
 		$strings = [
 			"Error: The URL defined in UNIFI_ALIAS_SYNC_CONTROLLER does not include the protocol 'https://'.\n",
-			"Error: The URL defined in UNIFI_ALIAS_SYNC_CONTROLLER does not include the port number. This is usually 8443 or 443.\n",
 			self::$exception_message . "\n",
 		];
 
 		return [
 		// Invalid
 			// Invalid protocol
-			[ 'http://example.com:8443',    $strings[0] . $strings[2] ],
-			[ 'example.com:8443',           $strings[0] . $strings[2] ],
-			[ 'http://example.com:8443',    $strings[0] . $strings[2] ],
-			// Invalid port
-			[ 'https://example.com',        $strings[1] . $strings[2] ],
-			// Both invalid
+			[ 'http://example.com:8443',    $strings[0] . $strings[1] ],
+			[ 'example.com:8443',           $strings[0] . $strings[1] ],
+			[ 'http://example.com:8443',    $strings[0] . $strings[1] ],
 			[ 'example.com',                implode( '', $strings ) ],
 		// Valid
+			[ 'https://example.com',        '' ],
 			[ 'https://example.com:8443',   '' ],
 			[ 'https://example.com:8443/',  '' ],
 			[ 'https://example.com:443',    '' ],
@@ -70,6 +67,23 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 		];
 	}
 
+	public static function values_for_port() {
+		$error_msg = "Error: Invalid format for UNIFI_ALIAS_SYNC_PORT (must be integer): %s";
+
+		return [
+		// Invalid
+			[ 0,      $error_msg ],
+			[ "0",    $error_msg ],
+			[ false,  $error_msg ],
+			[ true,   $error_msg ],
+			[ '',     $error_msg ],
+			[ 'aa',   $error_msg ],
+		// Valid
+			[ 8443,   '' ],
+			[ '8443', '' ],
+			[ null,   '' ],
+		];
+	}
 
 	//
 	//
@@ -125,6 +139,25 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 		if ( $message ) {
 			$this->expectException( Exception::class );
 			$this->expectExceptionMessage( 'Terminating script for invalid config file.' );
+		}
+		$this->expectOutputString( $message );
+
+		$test->invoke( self::$syncer );
+	}
+
+	/**
+	 * @dataProvider values_for_port
+	 */
+	public function test_port_must_be_int_like( $port, $message ) {
+		$this->set_config( 'UNIFI_ALIAS_SYNC_PORT', $port );
+
+		$test = self::get_method( 'verify_config' );
+
+		if ( $message ) {
+			$this->expectException( Exception::class );
+			$this->expectExceptionMessage( self::$exception_message );
+
+			$message = sprintf( $message, $port ) . "\n" . self::$exception_message . "\n";
 		}
 		$this->expectOutputString( $message );
 

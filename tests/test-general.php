@@ -21,8 +21,18 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 
 	public static function values_for_get_controller_url() {
 		return [
-			[ 'https://example.com:8443',  'https://example.com:8443' ],
-			[ 'https://example.com:8443/', 'https://example.com:8443' ],
+			[ 'https://example.com:8443',  null,  'https://example.com:8443' ],
+			[ 'https://example.com:8443/', null,  'https://example.com:8443' ],
+			[ 'https://example.com:8443',  443,   'https://example.com:8443' ],
+			[ 'https://example.com:8443/', 443,   'https://example.com:8443' ],
+			[ 'https://example.com:8443',  '443', 'https://example.com:8443' ],
+			[ 'https://example.com:8443/', '443', 'https://example.com:8443' ],
+			[ 'https://example.com',       null,  'https://example.com:8443' ],
+			[ 'https://example.com/',      null,  'https://example.com:8443' ],
+			[ 'https://example.com',       443,   'https://example.com:443'  ],
+			[ 'https://example.com/',      443,   'https://example.com:443'  ],
+			[ 'https://example.com',       '443', 'https://example.com:443'  ],
+			[ 'https://example.com/',      '443', 'https://example.com:443'  ],
 		];
 	}
 
@@ -92,10 +102,11 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 	/**
 	 * @dataProvider values_for_get_controller_url
 	 */
-	public function test_get_controller_url( $url, $expected ) {
+	public function test_get_controller_url( $url, $port, $expected ) {
 		$test = self::get_method( 'get_controller_url' );
 
 		$this->set_config( 'UNIFI_ALIAS_SYNC_CONTROLLER', $url );
+		$this->set_config( 'UNIFI_ALIAS_SYNC_PORT', ( $port ?? null ) );
 
 		$controller_url = $test->invoke( self::$syncer );
 
