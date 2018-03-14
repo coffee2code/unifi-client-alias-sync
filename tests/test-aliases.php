@@ -91,6 +91,22 @@ final class UniFiClientAliasAliasesTest extends UniFiClientAliasTestBase {
 		$this->assertEquals( $expected, $aliases );
 	}
 
+	public function test_get_client_aliases_for_first_site_with_configured_aliases() {
+		$this->set_config( 'UNIFI_ALIAS_SYNC_ALIASES', [ '35:19:29:f5:4b:1e' => "Brenda's Phone" ] );
+
+		$expected = [
+			'9e:cc:a1:2f:0b:aa' => "iPad X - Walter",
+			'bc:3e:ea:26:8d:50' => "Only on lowest priority site",
+			'35:19:29:f5:4b:1e' => "Brenda's Phone",
+		];
+
+		$test = self::get_method( 'get_client_aliases_for_site' );
+
+		$aliases = $test->invokeArgs( self::$syncer, [ 'default' ] );
+
+		$this->assertEquals( $expected, $aliases );
+	}
+
 	public function test_sync_aliases() {
 		// Get client aliases early just so it'll already be memoized and thus not
 		// appear in output.
@@ -200,6 +216,81 @@ TEXT;
 		$aliases = $test->invokeArgs( self::$syncer, [ 'default' ] );
 
 		$this->assertEmpty( $aliases );
+	}
+
+	public function test_sync_aliases_with_configured_aliases() {
+		$this->set_config( 'UNIFI_ALIAS_SYNC_ALIASES', [ '35:19:29:f5:4b:1e' => "Brenda's Phone" ] );
+
+		// Get client aliases early just so it'll already be memoized and thus not
+		// appear in output.
+		$test = self::get_method( 'get_aliased_clients' );
+		$test->invoke( self::$syncer );
+
+		$expected = <<<TEXT
+About to assign client aliases to site default...
+	Would have set alias for 9e:cc:a1:2f:0b:aa to "iPad X - Walter".
+	Client 35:19:29:f5:4b:1e already aliased as "Brenda's Note 8" (thus not getting aliased as "Brenda's Phone").
+	Clients assigned an alias: 1.
+About to assign client aliases to site 1qwe314gn...
+	No clients assigned an alias.
+About to assign client aliases to site 9lirxq5p...
+	Would have set alias for e4:d9:c7:cc:46:3b to "HP Inkjet Printer".
+	Would have set alias for 35:19:29:f5:4b:1e to "Brenda's Phone".
+	Client 90:04:e3:51:9d:a1 already aliased as "iPhone 8 - Adam" (thus not getting aliased as "Adam's iPhone 8").
+	Clients assigned an alias: 2.
+About to assign client aliases to site a98ey4l5...
+	No clients assigned an alias.
+About to assign client aliases to site cd90qe2s...
+	Client 35:19:29:f5:4b:1e already aliased as "Brenda's Note 8" (thus not getting aliased as "Brenda's Phone").
+	No clients assigned an alias.
+
+TEXT;
+
+		$this->set_config( 'UNIFI_ALIAS_SYNC_DISABLE_STATUS', false );
+
+		$test = self::get_method( 'sync_aliases' );
+
+		$this->expectOutputString( $expected );
+
+		$aliases = $test->invoke( self::$syncer );
+	}
+
+	public function test_sync_aliases_with_overwrites_allowed_and_configured_aliases() {
+		$this->set_config( 'UNIFI_ALIAS_SYNC_ALLOW_OVERWRITES', true );
+		$this->set_config( 'UNIFI_ALIAS_SYNC_ALIASES', [ '35:19:29:f5:4b:1e' => "Brenda's Phone" ] );
+
+		// Get client aliases early just so it'll already be memoized and thus not
+		// appear in output.
+		$test = self::get_method( 'get_aliased_clients' );
+		$test->invoke( self::$syncer );
+
+		$expected = <<<TEXT
+About to assign client aliases to site default...
+	Would have set alias for 9e:cc:a1:2f:0b:aa to "iPad X - Walter".
+	Would have set alias for 35:19:29:f5:4b:1e to "Brenda's Phone" (overwriting existing alias of "Brenda's Note 8").
+	Clients assigned an alias: 2.
+About to assign client aliases to site 1qwe314gn...
+	No clients assigned an alias.
+About to assign client aliases to site 9lirxq5p...
+	Would have set alias for e4:d9:c7:cc:46:3b to "HP Inkjet Printer".
+	Would have set alias for 35:19:29:f5:4b:1e to "Brenda's Phone".
+	Would have set alias for 90:04:e3:51:9d:a1 to "Adam's iPhone 8" (overwriting existing alias of "iPhone 8 - Adam").
+	Clients assigned an alias: 3.
+About to assign client aliases to site a98ey4l5...
+	No clients assigned an alias.
+About to assign client aliases to site cd90qe2s...
+	Would have set alias for 35:19:29:f5:4b:1e to "Brenda's Phone" (overwriting existing alias of "Brenda's Note 8").
+	Clients assigned an alias: 1.
+
+TEXT;
+
+		$this->set_config( 'UNIFI_ALIAS_SYNC_DISABLE_STATUS', false );
+
+		$test = self::get_method( 'sync_aliases' );
+
+		$this->expectOutputString( $expected );
+
+		$aliases = $test->invoke( self::$syncer );
 	}
 
 }
