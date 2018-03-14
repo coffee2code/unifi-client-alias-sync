@@ -63,6 +63,22 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 		$this->assertTrue( $resp );
 	}
 
+	public function test_is_testing_when_setting_is_false() {
+		$this->set_config( 'UNIFI_ALIAS_SYNC_TESTING' , false );
+
+		$foo = self::get_method( 'is_testing' );
+		$resp = $foo->invoke( self::$syncer );
+		$this->assertFalse( $resp );
+	}
+
+	public function test_is_testing_when_setting_is_true() {
+		$this->set_config( 'UNIFI_ALIAS_SYNC_TESTING' , true );
+
+		$foo = self::get_method( 'is_testing' );
+		$resp = $foo->invoke( self::$syncer );
+		$this->assertTrue( $resp );
+	}
+
 	public function test_status() {
 		$message = "This is a message.";
 		$test = self::get_method( 'status' );

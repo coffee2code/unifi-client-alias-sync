@@ -181,7 +181,7 @@ class Syncer {
 	protected function init() {
 		$this->verify_environment();
 
-		if ( ! $this->get_config( 'UNIFI_ALIAS_SYNC_TESTING' ) ) {
+		if ( ! $this->is_testing() ) {
 			require self::CONFIG_FILE;
 		}
 
@@ -196,7 +196,7 @@ class Syncer {
 		// Check for controller URL.
 		$controller_url = $this->get_controller_url();
 
-		if ( ! $this->get_config( 'UNIFI_ALIAS_SYNC_TESTING' ) ) {
+		if ( ! $this->is_testing() ) {
 			self::$unifi_connection = new \UniFi_API\Client(
 				$this->get_config( 'UNIFI_ALIAS_SYNC_USER' ),
 				$this->get_config( 'UNIFI_ALIAS_SYNC_PASSWORD' ),
@@ -253,6 +253,17 @@ class Syncer {
 	}
 
 	/**
+	 * Determines if testing mode is enabled.
+	 *
+	 * @access protected
+	 *
+	 * @return bool True if testing is enabled, false otherwise.
+	 */
+	protected function is_testing() {
+		return (bool) $this->get_config( 'UNIFI_ALIAS_SYNC_TESTING' );
+	}
+
+	/**
 	 * Verifies that the running environment is sufficient for the script to run
 	 * and terminates the script with an error message if not.
 	 *
@@ -264,7 +275,7 @@ class Syncer {
 	 */
 	protected function verify_environment() {
 		// Bail if the config file doesn't exist (unless unit testing).
-		if ( ! $this->get_config( 'UNIFI_ALIAS_SYNC_TESTING' ) && ! file_exists( self::CONFIG_FILE ) ) {
+		if ( ! $this->is_testing() && ! file_exists( self::CONFIG_FILE ) ) {
 			$this->bail( "Error: Unable to locate config file: {self::CONFIG_FILE}\nCopy config-sample.php to that filename and customize." );
 		}
 
@@ -355,7 +366,7 @@ class Syncer {
 	protected function get_sites() {
 		if ( self::$sites ) {
 			$sites = self::$sites;
-		} elseif ( $this->get_config( 'UNIFI_ALIAS_SYNC_TESTING' ) ) {
+		} elseif ( $this->is_testing() ) {
 			$sites = [];
 		} else {
 			$sites = [];
@@ -432,7 +443,7 @@ class Syncer {
 	protected function get_clients( $site_name ) {
 		// If not already memoized, make the request for the site's clients.
 		if ( empty( self::$clients[ $site_name ] ) ) {
-			if ( $this->get_config( 'UNIFI_ALIAS_SYNC_TESTING' ) ) {
+			if ( $this->is_testing() ) {
 				self::$clients[ $site_name ] = [];
 			} else {
 				self::$unifi_connection->set_site( $site_name );
@@ -620,7 +631,7 @@ class Syncer {
 								) );
 							}
 						} else {
-							if ( $this->get_config( 'UNIFI_ALIAS_SYNC_TESTING' ) ) {
+							if ( $this->is_testing() ) {
 								// When testing, pretend setting client alias is successful.
 								$result = true;
 							} elseif ( self::$unifi_connection ) {
