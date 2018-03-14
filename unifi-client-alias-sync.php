@@ -320,12 +320,6 @@ class Syncer {
 			$this->bail( 'Terminating script for invalid config file.' );
 		}
 
-		// For optional constants, define them with default values if not defined.
-		foreach ( self::OPTIONAL_CONFIG as $constant => $default ) {
-			if ( is_null( $this->get_config( $constant ) ) ) {
-				$this->set_config( $constant, $default );
-			}
-		}
 	}
 
 	/**
@@ -692,7 +686,10 @@ class Syncer {
 	}
 
 	/**
-	 * Gets the value of a config option.
+	 * Returns the value of a config option.
+	 *
+	 * If the config option wasn't explicitly defined, return the default value if
+	 * that has been defined.
 	 *
 	 * @access protected
 	 *
@@ -700,7 +697,13 @@ class Syncer {
 	 * @return mixed
 	 */
 	protected function get_config( $config_name ) {
-		return defined( $config_name ) ? constant( $config_name ) : null;
+		$value = defined( $config_name ) ? constant( $config_name ) : null;
+
+		if ( is_null( $value ) ) {
+			$value = self::OPTIONAL_CONFIG[ $config_name ] ?? null;
+		}
+
+		return $value;
 	}
 
 	/**

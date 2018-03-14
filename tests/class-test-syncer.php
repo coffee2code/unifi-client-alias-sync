@@ -41,13 +41,16 @@ class TestSyncer extends Syncer {
 	/**
 	 * Returns the value for the specified setting.
 	 *
+	 * If the config option wasn't explicitly defined, return the default value if
+	 * that has been defined.
+	 *
 	 * @access public
 	 *
 	 * @param string $config_name The setting name.
 	 * @return mixed
 	 */
 	public function get_config( $config_name ) {
-		return $GLOBALS[ self::$globals_key ][ $config_name ] ?? null;
+		return $GLOBALS[ self::$globals_key ][ $config_name ] ?? self::OPTIONAL_CONFIG[ $config_name ] ?? null;
 	}
 
 	/**
