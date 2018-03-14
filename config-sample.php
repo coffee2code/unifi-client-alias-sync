@@ -13,13 +13,13 @@
 
 
 /**
- * Fully qualified URL for the controller.
+ * Domain (or optionally the fully qualified URL) for the controller.
  *
- * Must include protocol ("https://"). Port number should be specified via
- * UNIFI_ALIAS_SYNC_PORT. If specified here, then UNIFI_ALIAS_SYNC_PORT is
- * ignored.
+ * Protocol (which must be "https://") is optional. Port number should be
+ * specified via UNIFI_ALIAS_SYNC_PORT. If specified here, then
+ * UNIFI_ALIAS_SYNC_PORT is ignored.
  *
- * Example: https://example.com
+ * Example: example.com or https://example.com
  *
  * @var string
  */

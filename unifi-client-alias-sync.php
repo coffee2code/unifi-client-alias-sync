@@ -35,7 +35,7 @@ class Syncer {
 	 * @var array
 	 */
 	const REQUIRED_CONFIG = [
-		'UNIFI_ALIAS_SYNC_CONTROLLER'        => 'URL of the UniFi controller, including full protocol and port number.',
+		'UNIFI_ALIAS_SYNC_CONTROLLER'        => 'Domain (or fully qualified URL) of the UniFi controller.',
 		'UNIFI_ALIAS_SYNC_USER'              => 'Username of admin user.',
 		'UNIFI_ALIAS_SYNC_PASSWORD'          => 'Password for admin user.',
 	];
@@ -224,6 +224,11 @@ class Syncer {
 	protected function get_controller_url() {
 		$controller = rtrim( $this->get_config( 'UNIFI_ALIAS_SYNC_CONTROLLER' ), '/' );
 
+		// If protocol was omitted, add it.
+		if ( 0 !== strpos( $controller, 'https://' ) ) {
+			$controller = 'https://' . $controller;
+		}
+
 		// If controller URL includes port number, that takes precedence over
 		// UNIFI_ALIAS_SYNC_PORT.
 		if ( preg_match( '~(.+):([0-9]+)$~', $controller, $matches ) ) {
@@ -287,15 +292,6 @@ class Syncer {
 			// Required settings cannot be null or an empty string.
 			if ( is_null( $value ) || '' === $value ) {
 				$this->status( "Error: Required constant {$constant} was not defined: {$description}" );
-				$bail = true;
-			}
-		}
-
-		// Check that full URL for controller was supplied.
-		$controller = $this->get_config( 'UNIFI_ALIAS_SYNC_CONTROLLER' );
-		if ( $controller ) {
-			if ( 0 !== strpos( $controller, 'https://' ) ) {
-				$this->status( "Error: The URL defined in UNIFI_ALIAS_SYNC_CONTROLLER does not include the protocol 'https://'." );
 				$bail = true;
 			}
 		}

@@ -28,7 +28,7 @@ A few things to note:
 2. Copy the `config-sample.php` file to `config.php` and customize the constants.
    - Refer to the file as it contains full documentation of all the constants.
    - Three constants are required:
-     - `UNIFI_ALIAS_SYNC_CONTROLLER`: the fully qualified URL of the controller with protocol (e.g. https://example.com)
+     - `UNIFI_ALIAS_SYNC_CONTROLLER`: the domain (or optionally fully qualified URL) of the controller; protocol (which should be 'https://') is optional
      - `UNIFI_ALIAS_SYNC_USER`: the admin username for the controller
      - `UNIFI_ALIAS_SYNC_PASSWORD`: the password for the admin user
    - Eight constants are optional:

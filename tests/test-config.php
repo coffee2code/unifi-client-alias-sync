@@ -42,31 +42,6 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 		return $return;
 	}
 
-	public static function values_for_controller() {
-		$strings = [
-			"Error: The URL defined in UNIFI_ALIAS_SYNC_CONTROLLER does not include the protocol 'https://'.\n",
-			self::$exception_message . "\n",
-		];
-
-		return [
-		// Invalid
-			// Invalid protocol
-			[ 'http://example.com:8443',    $strings[0] . $strings[1] ],
-			[ 'example.com:8443',           $strings[0] . $strings[1] ],
-			[ 'http://example.com:8443',    $strings[0] . $strings[1] ],
-			[ 'example.com',                implode( '', $strings ) ],
-		// Valid
-			[ 'https://example.com',        '' ],
-			[ 'https://example.com:8443',   '' ],
-			[ 'https://example.com:8443/',  '' ],
-			[ 'https://example.com:443',    '' ],
-			[ 'https://example.com:443/',   '' ],
-			[ 'https://example.com:10443',  '' ],
-			[ 'https://example.com:10443/', '' ],
-			
-		];
-	}
-
 	public static function values_for_port() {
 		$error_msg = "Error: Invalid format for UNIFI_ALIAS_SYNC_PORT (must be integer): %s";
 
@@ -126,23 +101,6 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 		$test->invoke( self::$syncer );
 
 		$this->assertEquals( $default, self::$syncer->get_config( $setting ) );
-	}
-
-	/**
-	 * @dataProvider values_for_controller
-	 */
-	public function test_controller_syntax( $url, $message ) {
-		$this->set_config( 'UNIFI_ALIAS_SYNC_CONTROLLER', $url );
-
-		$test = self::get_method( 'verify_config' );
-
-		if ( $message ) {
-			$this->expectException( Exception::class );
-			$this->expectExceptionMessage( self::$exception_message );
-		}
-		$this->expectOutputString( $message );
-
-		$test->invoke( self::$syncer );
 	}
 
 	/**

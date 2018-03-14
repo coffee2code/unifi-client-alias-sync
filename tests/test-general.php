@@ -33,6 +33,18 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 			[ 'https://example.com/',      443,   'https://example.com:443'  ],
 			[ 'https://example.com',       '443', 'https://example.com:443'  ],
 			[ 'https://example.com/',      '443', 'https://example.com:443'  ],
+			[ 'example.com:8443',          null,  'https://example.com:8443' ],
+			[ 'example.com:8443/',         null,  'https://example.com:8443' ],
+			[ 'example.com:8443',          443,   'https://example.com:8443' ],
+			[ 'example.com:8443/',         443,   'https://example.com:8443' ],
+			[ 'example.com:8443',          '443', 'https://example.com:8443' ],
+			[ 'example.com:8443/',         '443', 'https://example.com:8443' ],
+			[ 'example.com',               null,  'https://example.com:8443' ],
+			[ 'example.com/',              null,  'https://example.com:8443' ],
+			[ 'example.com',               443,   'https://example.com:443'  ],
+			[ 'example.com/',              443,   'https://example.com:443'  ],
+			[ 'example.com',               '443', 'https://example.com:443'  ],
+			[ 'example.com/',              '443', 'https://example.com:443'  ],
 		];
 	}
 
