@@ -139,6 +139,7 @@ class UniFiClientAliasTestBase extends TestCase {
 					],
 					(object) [
 						// Aliased client that has the same alias on a lower priority site
+						// Also, the client is on a lower priority site without alias
 						'mac'  => '35:19:29:f5:4b:1e',
 						'name' => "Brenda's Note 8",
 					],
@@ -156,6 +157,10 @@ class UniFiClientAliasTestBase extends TestCase {
 					(object) [
 						// Intentionally unaliased and not found on another site
 						'mac'  => 'e4:d9:c7:cc:46:3b',
+					],
+					(object) [
+						// Intentionally unaliased client that is aliased on higher priority site
+						'mac'  => '35:19:29:f5:4b:1e',
 					],
 					(object) [
 						// Intentionally different alias than client of 'default'

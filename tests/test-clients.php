@@ -68,7 +68,7 @@ final class UniFiClientAliasClientsTest extends UniFiClientAliasTestBase {
 		"35:19:29:f5:4b:1e" => "Brenda's Note 8"
 		"e4:d9:c7:cc:46:3b" => "HP Inkjet Printer"
 	Site 1qwe314gn has 0 clients, 0 of which are aliased.
-	Site 9lirxq5p has 4 clients, 2 of which are aliased.
+	Site 9lirxq5p has 5 clients, 2 of which are aliased.
 		"90:04:e3:51:9d:a1" => "iPhone 8 - Adam"
 		"9e:cc:a1:2f:0b:aa" => "iPad X - Walter"
 	Site a98ey4l5 has 2 clients, 0 of which are aliased.
