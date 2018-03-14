@@ -518,11 +518,6 @@ class Syncer {
 		// Get a list of aliased clients per site.
 		$client_aliases = $this->get_aliased_clients();
 
-		// Aliases defined via constant take precedence and apply to all sites.
-		foreach ( $this->get_config( 'UNIFI_ALIAS_SYNC_ALIASES' ) as $mac => $alias ) {
-			$macs[ $mac ] = $alias;
-		}
-
 		// Get an associative array of site names and their aliases (as arrays).
 		$site_names = array_keys( $client_aliases );
 		$site_names_with_aliases = [];
@@ -565,6 +560,11 @@ class Syncer {
 
 			}
 
+		}
+
+		// Aliases defined via constant take precedence and apply to all sites.
+		foreach ( $this->get_config( 'UNIFI_ALIAS_SYNC_ALIASES' ) as $mac => $alias ) {
+			$macs[ $mac ] = $alias;
 		}
 
 		return $macs;
