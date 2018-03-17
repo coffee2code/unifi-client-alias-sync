@@ -92,13 +92,12 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 	 * @dataProvider optional_settings
 	 */
 	public function test_optional_settings_get_default_values( $setting, $default ) {
-		$test = self::get_method( 'verify_config' );
-
 		$this->set_config( $setting, null );
 
-		$this->expectOutputString( '' );
-
-		$test->invoke( self::$syncer );
+		// The default for UNIFI_ALIAS_SYNC_TESTING is set to true for unit testing.
+		if ( 'UNIFI_ALIAS_SYNC_TESTING' === $setting ) {
+			$default = true;
+		}
 
 		$this->assertEquals( $default, self::$syncer->get_config( $setting ) );
 	}

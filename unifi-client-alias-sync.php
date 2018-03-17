@@ -92,6 +92,14 @@ class Syncer {
 	protected static $client_aliases;
 
 	/**
+	 * Memoized storage for configuration settings.
+	 *
+	 * @var array
+	 * @access protected
+	 */
+	protected static $config = [];
+
+	/**
 	 * The singleton instantiation of the class.
 	 *
 	 * @access protected
@@ -729,36 +737,51 @@ class Syncer {
 	 * @param  string @config_name Name of the config option.
 	 * @return mixed
 	 */
-	protected function get_config( $config_name ) {
+	public function get_config( $config_name ) {
+		// Return memoized value, if already set.
+		if ( isset( self::$config[ $config_name ] ) ) {
+			return self::$config[ $config_name ];
+		}
+
 		$value = defined( $config_name ) ? constant( $config_name ) : null;
 
 		if ( is_null( $value ) ) {
 			$value = self::OPTIONAL_CONFIG[ $config_name ] ?? null;
 		}
 
-		return $value;
+		return $this->set_config( $config_name, $value );
 	}
 
 	/**
 	 * Sets the value of a config option.
 	 *
-	 * Since config options are implemented as constants, a given config option
-	 * can only be set once.
-	 *
 	 * @access protected
 	 *
 	 * @param  string $config_name Name of the config option.
 	 * @param  mixed  $value       Value for the config option.
-	 * @return bool   True if the config option was assigned a value, else false.
+	 * @return mixed  The value for the config option.
 	 */
-	protected function set_config( $config_name, $value ) {
-		if ( defined( $config_name ) ) {
-			return false;
-		}
-
-		define( $config_name, $value );
-		return true;
+	public function set_config( $config_name, $value ) {
+		return self::$config[ $config_name ] = $value;
 	}
+
+	/**
+	 * Clears the value for a setting (or all settings if a specific one wasn't
+	 * specified).
+	 *
+	 * @access public
+	 *
+	 * @param string $config The name of the setting to clear. If not provided or
+	 *                       an empty string, then all settings will be cleared.
+	 */
+	public function clear_config( $config = '' ) {
+		if ( $config ) {
+			unset( self::$config[ $config ] );
+		} else {
+			self::$config = [];
+		}
+	}
+
 }
 
 // Immediately invoke the script when executed from the command line.
