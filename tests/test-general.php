@@ -56,7 +56,7 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 	}
 
 	public function test_is_debug_when_setting_is_true() {
-		$this->set_config( 'UNIFI_ALIAS_SYNC_DEBUG' , true );
+		$this->set_config( 'UNIFI_ALIAS_SYNC_DEBUG', true );
 
 		$foo = self::get_method( 'is_debug' );
 		$resp = $foo->invoke( self::$syncer );
@@ -64,7 +64,7 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 	}
 
 	public function test_is_testing_when_setting_is_false() {
-		$this->set_config( 'UNIFI_ALIAS_SYNC_TESTING' , false );
+		$this->set_config( 'UNIFI_ALIAS_SYNC_TESTING', false );
 
 		$foo = self::get_method( 'is_testing' );
 		$resp = $foo->invoke( self::$syncer );
@@ -72,7 +72,7 @@ final class UniFiClientAliasGeneralTest extends UniFiClientAliasTestBase {
 	}
 
 	public function test_is_testing_when_setting_is_true() {
-		$this->set_config( 'UNIFI_ALIAS_SYNC_TESTING' , true );
+		$this->set_config( 'UNIFI_ALIAS_SYNC_TESTING', true );
 
 		$foo = self::get_method( 'is_testing' );
 		$resp = $foo->invoke( self::$syncer );
