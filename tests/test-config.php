@@ -25,7 +25,7 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 	public static function required_settings() {
 		$return = [];
 
-		foreach ( UniFi_Client_Alias_Sync\TestSyncer::REQUIRED_CONFIG as $setting => $description ) {
+		foreach ( UniFi_Client_Alias_Sync\Syncer::REQUIRED_CONFIG as $setting => $description ) {
 			$return[] = [ $setting, $description ];
 		}
 
@@ -35,7 +35,7 @@ final class UniFiClientAliasConfigTest extends UniFiClientAliasTestBase {
 	public static function optional_settings() {
 		$return = [];
 
-		foreach ( UniFi_Client_Alias_Sync\TestSyncer::OPTIONAL_CONFIG as $setting => $default ) {
+		foreach ( UniFi_Client_Alias_Sync\Syncer::OPTIONAL_CONFIG as $setting => $default ) {
 			$return[] = [ $setting, $default ];
 		}
 

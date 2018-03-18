@@ -36,9 +36,9 @@ class UniFiClientAliasTestBase extends TestCase {
 	];
 
 	/**
-	 * Instance of the TestSync object.
+	 * Instance of the Syncer object.
 	 *
-	 * @var TestSyncer
+	 * @var Syncer
 	 */
 	protected static $syncer;
 
@@ -67,7 +67,7 @@ class UniFiClientAliasTestBase extends TestCase {
 		$this->set_static_var( 'clients', null );
 		$this->set_static_var( 'client_aliases', null );
 
-		self::$syncer = UniFi_Client_Alias_Sync\TestSyncer::get_instance();
+		self::$syncer = UniFi_Client_Alias_Sync\Syncer::get_instance();
 
 		// Reset settings to default values.
 		self::reset_config();
@@ -206,7 +206,7 @@ class UniFiClientAliasTestBase extends TestCase {
 	 * @return ReflectionMethod
 	 */
 	protected static function get_method( $name ) {
-		$class = new \ReflectionClass( 'UniFi_Client_Alias_Sync\TestSyncer' );
+		$class = new \ReflectionClass( 'UniFi_Client_Alias_Sync\Syncer' );
 		$method = $class->getMethod( $name );
 		$method->setAccessible( true );
 		unset( $class );
@@ -230,7 +230,7 @@ class UniFiClientAliasTestBase extends TestCase {
 
 	/**
 	 * Sets the value of the an otherwise protected or private property for the
-	 * UniFi_Client_Alias_Sync\TestSyncer class.
+	 * UniFi_Client_Alias_Sync\Syncer class.
 	 *
 	 * @access protected
 	 *
@@ -239,7 +239,7 @@ class UniFiClientAliasTestBase extends TestCase {
 	 * @return mixed The value assigned to the property.
 	 */
 	protected static function set_static_var( $name, $value ) {
-		$class = new \ReflectionClass( 'UniFi_Client_Alias_Sync\TestSyncer' );
+		$class = new \ReflectionClass( 'UniFi_Client_Alias_Sync\Syncer' );
 		$static_var = $class->getProperty( $name );
 		$static_var->setAccessible( true );
 		$static_var->setValue( $value );
