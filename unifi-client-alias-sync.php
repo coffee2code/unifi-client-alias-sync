@@ -450,16 +450,19 @@ class Syncer {
 	 */
 	protected function get_clients( $site_name ) {
 		// If not already memoized, make the request for the site's clients.
-		if ( empty( self::$clients[ $site_name ] ) ) {
-			if ( $this->is_testing() ) {
-				self::$clients[ $site_name ] = [];
-			} else {
-				self::$unifi_connection->set_site( $site_name );
-				self::$clients[ $site_name ] = self::$unifi_connection->stat_allusers();
-			}
+		if ( ! empty( self::$clients[ $site_name ] ) ) {
+			$clients = self::$clients[ $site_name ];
+		} elseif ( $this->is_testing() ) {
+			$clients = [];
+		} else {
+			self::$unifi_connection->set_site( $site_name );
+			$clients = self::$unifi_connection->stat_allusers();
+
+			// Memoize full list of clients.
+			self::$clients[ $site_name ] = $clients;
 		}
 
-		return self::$clients[ $site_name ];
+		return $clients;
 	}
 
 	/**
