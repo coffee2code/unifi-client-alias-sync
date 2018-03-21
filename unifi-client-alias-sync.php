@@ -53,6 +53,7 @@ class Syncer {
 		'UNIFI_ALIAS_SYNC_ALIASES'           => [],
 		'UNIFI_ALIAS_SYNC_ALLOW_OVERWRITES'  => false,
 		'UNIFI_ALIAS_SYNC_EXCLUDE_SITES'     => [],
+		'UNIFI_ALIAS_SYNC_EXCLUDE_CLIENTS'   => [],
 		'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' => [],
 		// Not for general use.
 		'UNIFI_ALIAS_SYNC_TESTING'           => false,
@@ -347,7 +348,7 @@ class Syncer {
 		}
 
 		// Check that array settings, if present, are arrays.
-		$arrays = [ 'UNIFI_ALIAS_SYNC_EXCLUDE_SITES', 'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' ];
+		$arrays = [ 'UNIFI_ALIAS_SYNC_EXCLUDE_CLIENTS', 'UNIFI_ALIAS_SYNC_EXCLUDE_SITES', 'UNIFI_ALIAS_SYNC_PRIORITIZED_SITES' ];
 		foreach ( $arrays as $array ) {
 			$value = $this->get_config( $array );
 			if ( ! is_null( $value ) && ! is_array( $value ) ) {
@@ -461,6 +462,11 @@ class Syncer {
 			// Memoize full list of clients.
 			self::$clients[ $site_name ] = $clients;
 		}
+
+		// Exclude any excluded clients.
+		$clients = array_filter( $clients, function( $client ) {
+			return ! in_array( $client->mac, $this->get_config( 'UNIFI_ALIAS_SYNC_EXCLUDE_CLIENTS' ) );
+		} );
 
 		return $clients;
 	}

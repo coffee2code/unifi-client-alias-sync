@@ -120,6 +120,18 @@ define( 'UNIFI_ALIAS_SYNC_ALIASES',    [
 define( 'UNIFI_ALIAS_SYNC_EXCLUDE_SITES', [] );
 
 /**
+ * List of clients to exclude from consideration.
+ *
+ * Clients listed will not be receive an alias on any site.
+ *
+ * Any clients listed here will be excluded, superceding their inclusion in any
+ * other setting (such as UNIFI_ALIAS_SYNC_ALIASES).
+ *
+ * @var array
+ */
+define( 'UNIFI_ALIAS_SYNC_EXCLUDE_CLIENTS', [] );
+
+/**
  * Boolean flag indicating if aliases can be overwritten.
  *
  * If enabled, client aliases defined at a higher priority will potentially
